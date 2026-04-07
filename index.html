@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5">
 <title>Wardrobe</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
 <style>
@@ -55,6 +55,12 @@
   --text:#ffefc0;--muted:#8a6620;--muted2:#3d2e00;--accent:#f0a500;
   --shadow:0 2px 20px rgba(0,0,0,0.5);
 }
+/* Shopping List — Deep teal */
+[data-page="shopping"]{
+  --bg:#050f10;--surface:#091618;--white:#0d1f22;--border:#123030;
+  --text:#d4f0ee;--muted:#3a7070;--muted2:#1a3a3a;--accent:#22d3d3;
+  --shadow:0 2px 20px rgba(0,0,0,0.5);
+}
 /* Looks — Vinho/rosa */
 [data-page="looks"]{
   --bg:#140810;--surface:#1e0e1a;--white:#281424;--border:#3f1c35;
@@ -101,7 +107,7 @@ body, .sidebar, .sidebar-brand, .nav-item, .sidebar-footer,
 body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 
 /* ── LAYOUT ── */
-.app{display:flex;min-height:100vh}
+.app{display:flex;min-height:100vh;overflow-x:hidden}
 
 /* ── SIDEBAR ── */
 .sidebar{
@@ -141,10 +147,10 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
 .util-btn:hover{background:var(--bg);color:var(--text)}
 
 /* ── MAIN ── */
-.main{margin-left:200px;flex:1;min-height:100vh}
+.main{margin-left:200px;flex:1;min-height:100vh;overflow-x:hidden}
 
 /* ── PAGES ── */
-.page{display:none;padding:48px 52px;max-width:1100px}
+.page{display:none;padding:48px 52px;max-width:1100px;width:100%}
 .page.active{display:block}
 
 /* ── PAGE HEADER ── */
@@ -169,7 +175,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
 .btn-outline:hover{background:var(--white)}
 
 /* ── DASHBOARD ── */
-.dash-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px}
+.dash-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:40px}
 .stat-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:22px 24px}
 .stat-label{font-size:11px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);margin-bottom:8px;font-weight:500}
 .stat-val{font-family:'Inter',system-ui,sans-serif;font-size:40px;font-weight:700;letter-spacing:-0.04em;line-height:1}
@@ -422,6 +428,190 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
 .look-line-rm{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:4px;border-radius:4px;transition:all 0.12s;padding-top:10px}
 .look-line-rm:hover{color:var(--danger)}
 
+
+/* ── SHOPPING LIST ── */
+.shop-row{
+  display:grid;grid-template-columns:32px 1fr auto auto auto;
+  align-items:center;gap:12px;padding:11px 18px;
+  border-bottom:1px solid var(--border);cursor:grab;
+  transition:background 0.12s;
+}
+.shop-row:last-child{border-bottom:none}
+.shop-row:hover{background:var(--bg)}
+.shop-row.dragging{opacity:0.4;cursor:grabbing}
+.shop-rank{font-size:13px;font-weight:700;color:var(--accent);font-family:'Inter',system-ui,sans-serif;text-align:center}
+.shop-info{min-width:0}
+.shop-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shop-meta{font-size:11px;color:var(--muted);margin-top:1px}
+.shop-demand{font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;cursor:pointer;user-select:none;transition:all 0.15s;white-space:nowrap}
+.shop-demand:hover{opacity:0.75}
+.sd-High{background:#fee2e2;color:#991b1b}
+.sd-Medium{background:#fef3c7;color:#92400e}
+.sd-Low{background:#f1f5f9;color:#64748b}
+.shop-check{width:18px;height:18px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.shop-rm{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px 6px;border-radius:4px;flex-shrink:0;transition:all 0.12s}
+.shop-rm:hover{background:#fee2e2;color:#991b1b}
+
+
+/* ── CUSTOM CHECKBOXES ── */
+input[type="checkbox"].themed-check{display:none}
+.check-label{
+  display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  font-size:12px;color:var(--text);font-weight:400;user-select:none;
+}
+.check-box{
+  width:16px;height:16px;border-radius:4px;flex-shrink:0;
+  border:1.5px solid var(--muted);background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;
+}
+.check-label:hover .check-box{border-color:var(--accent)}
+input[type="checkbox"].themed-check:checked + .check-box{
+  background:var(--accent);border-color:var(--accent);
+}
+input[type="checkbox"].themed-check:checked + .check-box::after{
+  content:'';width:4px;height:7px;border:2px solid #fff;
+  border-top:none;border-left:none;transform:rotate(45deg) translateY(-1px);display:block;
+}
+
+/* ── CUSTOM SELECTS ── */
+.fselect,.look-line-cat,.look-line-piece-sel{
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+  padding-right:28px!important;cursor:pointer;
+}
+.fselect option,.look-line-cat option,.look-line-piece-sel option{
+  background:var(--white);color:var(--text);padding:8px;
+}
+
+/* ── LOOK LINE CHECK — themed inline checkbox ── */
+.look-line-check{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text);cursor:pointer;white-space:nowrap;padding-top:2px}
+.look-line-check input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:14px;height:14px;border-radius:3px;flex-shrink:0;
+  border:1.5px solid var(--muted);background:var(--bg);cursor:pointer;
+  transition:all 0.15s;position:relative;
+}
+.look-line-check input[type=checkbox]:checked{
+  background:var(--accent);border-color:var(--accent);
+}
+.look-line-check input[type=checkbox]:checked::after{
+  content:'';position:absolute;left:3px;top:0px;width:4px;height:7px;
+  border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg);
+}
+
+/* ── SHOPPING CHECK — themed ── */
+.shop-check{
+  appearance:none;-webkit-appearance:none;
+  width:18px;height:18px;border-radius:5px;flex-Shrink:0;
+  border:1.5px solid var(--muted);background:var(--bg);cursor:pointer;
+  transition:all 0.15s;position:relative;
+}
+.shop-check:checked{background:var(--accent);border-color:var(--accent);}
+.shop-check:checked::after{
+  content:'';position:absolute;left:5px;top:1px;width:5px;height:9px;
+  border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg);
+}
+
+/* ── INV ITEM CHECK ── */
+.inv-item input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:13px;height:13px;border-radius:3px;flex-shrink:0;
+  border:1.5px solid var(--muted);background:var(--bg);cursor:pointer;
+  transition:all 0.15s;position:relative;
+}
+.inv-item input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent);}
+.inv-item input[type=checkbox]:checked::after{
+  content:'';position:absolute;left:2px;top:0px;width:4px;height:7px;
+  border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg);
+}
+
+/* ── LOOK DETAIL CHECK ── */
+.look-piece-row input[type=checkbox]{
+  appearance:none;-webkit-appearance:none;
+  width:15px;height:15px;border-radius:4px;flex-shrink:0;
+  border:1.5px solid var(--muted);background:var(--bg);cursor:pointer;
+  transition:all 0.15s;position:relative;
+}
+.look-piece-row input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent);}
+.look-piece-row input[type=checkbox]:checked::after{
+  content:'';position:absolute;left:3px;top:0px;width:4px;height:8px;
+  border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg);
+}
+
+
+/* ── HOVER PRE-SELECT ANIMATIONS ── */
+
+/* Checkbox ghost-checkmark on hover */
+input[type="checkbox"]:not(:checked):hover,
+.look-line-check input[type=checkbox]:not(:checked):hover,
+.look-piece-row input[type=checkbox]:not(:checked):hover,
+.inv-item input[type=checkbox]:not(:checked):hover,
+.shop-check:not(:checked):hover{
+  border-color:var(--accent)!important;
+  background:var(--bg)!important;
+}
+input[type="checkbox"]:not(:checked):hover::after,
+.look-line-check input[type=checkbox]:not(:checked):hover::after,
+.look-piece-row input[type=checkbox]:not(:checked):hover::after,
+.inv-item input[type=checkbox]:not(:checked):hover::after,
+.shop-check:not(:checked):hover::after{
+  content:''!important;
+  position:absolute;
+  border:2px solid var(--accent)!important;
+  border-top:none!important;border-left:none!important;
+  transform:rotate(45deg)!important;
+  opacity:0.4!important;display:block!important;
+}
+/* size offsets per checkbox */
+.look-line-check input[type=checkbox]:not(:checked):hover::after{left:3px;top:0px;width:4px;height:7px}
+.look-piece-row input[type=checkbox]:not(:checked):hover::after{left:3px;top:0px;width:4px;height:8px}
+.inv-item input[type=checkbox]:not(:checked):hover::after{left:2px;top:0px;width:4px;height:7px}
+.shop-check:not(:checked):hover::after{left:5px;top:1px;width:5px;height:9px}
+
+/* ── X BUTTON ANIMATIONS ── */
+/* All remove/close buttons */
+.icon-btn, .inv-rm-btn, .look-line-rm, .shop-rm, .look-detail-close, .photo-rm{
+  transition:transform 0.18s cubic-bezier(0.34,1.56,0.64,1), background 0.15s, color 0.15s, box-shadow 0.15s!important;
+}
+.icon-btn:hover{
+  transform:scale(1.18) rotate(8deg)!important;
+}
+.inv-rm-btn:hover{
+  transform:scale(1.2) rotate(-8deg)!important;
+  background:#fee2e2!important;color:#991b1b!important;
+}
+.look-line-rm:hover{
+  transform:scale(1.2) rotate(10deg)!important;
+  color:var(--danger)!important;
+}
+.shop-rm:hover{
+  transform:scale(1.2) rotate(-10deg)!important;
+  background:#fee2e2!important;color:#991b1b!important;
+}
+.look-detail-close:hover{
+  transform:scale(1.15) rotate(90deg)!important;
+  background:rgba(255,255,255,0.25)!important;
+}
+.photo-rm:hover{
+  transform:scale(1.15) rotate(-90deg)!important;
+  background:rgba(200,0,0,0.7)!important;
+}
+
+/* ── PILL HOVER MICRO-ANIM ── */
+.ctx-pill{transition:all 0.15s, transform 0.15s cubic-bezier(0.34,1.56,0.64,1)!important}
+.ctx-pill:hover{transform:scale(1.06)!important}
+.ctx-pill.selected{transform:scale(1.04)!important}
+
+/* ── CARD REMOVE (wcard, need-card) X buttons ── */
+.wcard .icon-btn:hover, .wish-card .icon-btn:hover{
+  transform:scale(1.2) rotate(8deg)!important;
+}
+
+/* ── LOOK DETAIL close bounce ── */
+@keyframes closeIn{from{transform:rotate(0deg)}to{transform:rotate(90deg)}}
+
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:64px 24px;color:var(--muted)}
 .empty-icon{font-size:40px;margin-bottom:12px}
@@ -509,7 +699,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
   .sidebar{display:none}
   .main{margin-left:0}
   .page{padding:24px 18px}
-  .dash-stats{grid-template-columns:1fr 1fr}
+  .dash-stats{grid-template-columns:1fr 1fr 1fr}
   .dash-menu{grid-template-columns:1fr 1fr}
   .needs-grid{grid-template-columns:1fr 1fr}
   .dash-charts{grid-template-columns:1fr}
@@ -529,7 +719,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
 /* ── LOCK SCREEN ── */
 #lock-screen{
   position:fixed;inset:0;z-index:9999;
-  background:transparent;
+  background:#09090b;
   display:flex;align-items:center;justify-content:center;
   flex-direction:column;gap:0;
   transition:opacity 0.7s ease,visibility 0.7s ease;
@@ -883,6 +1073,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
     <div class="nav-item" onclick="go('needs')"><span class="nav-num">04</span>Missing Items</div>
     <div class="nav-item" onclick="go('sellers')"><span class="nav-num">05</span>Sellers</div>
     <div class="nav-item" onclick="go('looks')"><span class="nav-num">06</span>Looks</div>
+    <div class="nav-item" onclick="go('shopping')"><span class="nav-num">07</span>Buy Plan</div>
   </nav>
   <div class="sidebar-footer">
     <div class="save-ok" id="save-ok">✓ Saved</div>
@@ -908,6 +1099,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
     <div class="stat-card"><div class="stat-label">Wishlist</div><div class="stat-val" id="s-wish">0</div><div class="stat-sub">wishlist items</div></div>
     <div class="stat-card"><div class="stat-label">Wishlist Value</div><div class="stat-val" style="font-size:28px" id="s-val">R$0</div><div class="stat-sub">estimated</div></div>
     <div class="stat-card"><div class="stat-label">Sellers</div><div class="stat-val" id="s-sellers">0</div><div class="stat-sub">registered</div></div>
+    <div class="stat-card" onclick="go('shopping')" style="cursor:pointer"><div class="stat-label">To Buy</div><div class="stat-val" id="s-tobuy">0</div><div class="stat-sub">high priority items</div></div>
   </div>
 
   <!-- bg 3D shapes -->
@@ -949,6 +1141,12 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
       <div class="menu-icon-3d"><svg viewBox="0 0 56 56" fill="none"><defs><linearGradient id="mi5a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="0.9"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.3"/></linearGradient><linearGradient id="mi5b" x1="1" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="0.55"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.1"/></linearGradient></defs><rect x="7" y="9" width="24" height="38" rx="4" fill="url(#mi5a)" stroke="currentColor" stroke-opacity="0.2" stroke-width="1"/><rect x="25" y="17" width="24" height="30" rx="4" fill="url(#mi5b)" stroke="currentColor" stroke-opacity="0.15" stroke-width="1"/><rect x="7" y="9" width="24" height="11" rx="4" fill="currentColor" fill-opacity="0.22"/><rect x="25" y="17" width="24" height="10" rx="4" fill="currentColor" fill-opacity="0.14"/></svg></div>
       <div class="menu-title">Looks</div>
       <div class="menu-sub">Looks to copy</div>
+    </div>
+    <div class="menu-card" onclick="go('shopping')">
+      <div class="menu-num">07 /</div>
+      <div class="menu-icon-3d"><svg viewBox="0 0 56 56" fill="none"><defs><linearGradient id="mi6a" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="currentColor" stop-opacity="0.9"/><stop offset="100%" stop-color="currentColor" stop-opacity="0.25"/></linearGradient></defs><rect x="10" y="14" width="36" height="32" rx="5" fill="url(#mi6a)" stroke="currentColor" stroke-opacity="0.2" stroke-width="1"/><line x1="18" y1="24" x2="38" y2="24" stroke="currentColor" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="31" x2="34" y2="31" stroke="currentColor" stroke-opacity="0.4" stroke-width="2" stroke-linecap="round"/><line x1="18" y1="38" x2="28" y2="38" stroke="currentColor" stroke-opacity="0.25" stroke-width="2" stroke-linecap="round"/><path d="M20 14 L20 10 Q28 7 36 10 L36 14" fill="none" stroke="currentColor" stroke-opacity="0.4" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <div class="menu-title">Buy Plan</div>
+      <div class="menu-sub">Your purchase priorities</div>
     </div>
   </div>
 
@@ -1055,10 +1253,12 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
     <button class="pill active" onclick="setNeedsFilter('all',this)">All</button>
     <button class="pill" onclick="setNeedsFilter('Clinic',this)">Clinic</button>
     <button class="pill" onclick="setNeedsFilter('Work',this)">Work</button>
+    <button class="pill" onclick="setNeedsFilter('Formal Event',this)">Formal</button>
+    <button class="pill" onclick="setNeedsFilter('College',this)">College</button>
     <button class="pill" onclick="setNeedsFilter('Gym',this)">Gym</button>
-    <button class="pill" onclick="setNeedsFilter('Social',this)">Social</button>
-    <button class="pill" onclick="setNeedsFilter('Everyday',this)">Everyday</button>
-    <button class="pill" onclick="setNeedsFilter('Boxing',this)">Boxing</button>
+    <button class="pill" onclick="setNeedsFilter('Go Out',this)">Go Out</button>
+    <button class="pill" onclick="setNeedsFilter('Club',this)">Club</button>
+    <button class="pill" onclick="setNeedsFilter('Stay Home',this)">Home</button>
   </div>
   <div class="needs-grid" id="needs-grid"></div>
 </div>
@@ -1080,15 +1280,38 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
   </div>
   <div class="toolbar" id="looks-filter-bar" style="margin-bottom:20px">
     <button class="pill active" onclick="filterLooks('all',this)">All</button>
-    <button class="pill" onclick="filterLooks('Clinic / Work',this)">Clinic</button>
-    <button class="pill" onclick="filterLooks('Social / Night Out',this)">Social</button>
-    <button class="pill" onclick="filterLooks('Casual / Everyday',this)">Casual</button>
-    <button class="pill" onclick="filterLooks('Gym / Training',this)">Gym</button>
-    <button class="pill" onclick="filterLooks('Boxing',this)">Boxing</button>
-    <button class="pill" onclick="filterLooks('Formal / Event',this)">Formal</button>
-    <button class="pill" onclick="filterLooks('Home / Relaxed',this)">Home</button>
+    <button class="pill" onclick="filterLooks('Clinic',this)">Clinic</button>
+    <button class="pill" onclick="filterLooks('Work',this)">Work</button>
+    <button class="pill" onclick="filterLooks('Formal Event',this)">Formal</button>
+    <button class="pill" onclick="filterLooks('College',this)">College</button>
+    <button class="pill" onclick="filterLooks('Gym',this)">Gym</button>
+    <button class="pill" onclick="filterLooks('Go Out',this)">Go Out</button>
+    <button class="pill" onclick="filterLooks('Club',this)">Club</button>
+    <button class="pill" onclick="filterLooks('Stay Home',this)">Home</button>
+    <button class="pill" onclick="filterLooks('Date Night',this)">Date Night</button>
   </div>
   <div id="looks-grid"></div>
+</div>
+
+<!-- ── 07 SHOPPING LIST ── -->
+<div class="page" id="page-shopping">
+  <div class="ph">
+    <div class="ph-left"><div class="overline">07 / Planning</div><h1>Buy Plan</h1></div>
+    <div class="ph-right" style="gap:10px;display:flex">
+      <span id="shopping-budget-label" style="font-size:13px;color:var(--muted);align-self:center"></span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px" id="shopping-summary-cards"></div>
+  <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+      <span style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500">Sort by</span>
+      <button class="pill active" onclick="setSortShopping('priority',this)">Priority</button>
+      <button class="pill" onclick="setSortShopping('demand',this)">Demand</button>
+      <button class="pill" onclick="setSortShopping('category',this)">Category</button>
+      <button class="pill" onclick="setSortShopping('manual',this)">My Order</button>
+    </div>
+    <div id="shopping-list-inner" style="padding:8px 0"></div>
+  </div>
 </div>
 
 </main>
@@ -1118,8 +1341,14 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
     <div class="fg"><label class="flabel">Color</label><select class="fselect" id="i-color"><option>White</option><option>Black</option><option>Gray</option><option>Navy Blue</option><option>Light Blue</option><option>Green</option><option>Red</option><option>Pink</option><option>Beige</option><option>Brown</option><option>Yellow</option><option>Patterned</option></select></div>
   </div>
   <div class="frow">
-    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="i-cat"><option>T-Shirt</option><option>Polo</option><option>Hoodie</option><option>Jacket</option><option>Overcoat</option><option>Dress Shirt</option><option>Football Shirt</option><option>Gym Tank</option><option>Pants</option><option>Jeans</option><option>Shorts</option><option>Footwear</option><option>Underwear</option><option>Socks</option><option>Accessory</option></select></div>
-    <div class="fg"><label class="flabel">Season</label><select class="fselect" id="i-season"><option>Summer</option><option>Winter</option><option>Mid-season</option><option>All seasons</option></select></div>
+    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="i-cat" onchange="updateMissingLink(this.value)"><option>T-Shirts</option><option>Brand T-Shirts</option><option>Polo</option><option>Hoodies</option><option>Jackets</option><option>Coats</option><option>Dress Shirts</option><option>Football Shirts</option><option>Gym T-Shirts</option><option>Pants</option><option>Shorts & Bermudas</option><option>Shoes & Footwear</option><option>Boxer Briefs</option><option>Socks</option><option>Accessories</option></select></div>
+    <div class="fg">
+    <label class="flabel">Link to Missing Item <span style="font-weight:400;color:var(--muted)">(optional)</span></label>
+    <select class="fselect" id="i-missing-link" onchange="">
+      <option value="">— Select from Missing Items —</option>
+    </select>
+  </div>
+  <div class="fg"><label class="flabel">Season</label><select class="fselect" id="i-season"><option>Summer</option><option>Winter</option><option>Mid-season</option><option>All seasons</option></select></div>
   </div>
   <div class="divider"></div>
   <div class="fg">
@@ -1160,14 +1389,14 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
     <div class="fg"><label class="flabel">Priority</label><select class="fselect" id="w-pri"><option value="High">🔴 High</option><option value="Medium">🟠 Medium</option><option value="Low">⚪ Low</option></select></div>
   </div>
   <div class="frow">
-    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="w-cat"><option>T-Shirt</option><option>Polo</option><option>Hoodie</option><option>Jacket</option><option>Overcoat</option><option>Dress Shirt</option><option>Football Shirt</option><option>Gym Tank</option><option>Pants</option><option>Jeans</option><option>Shorts</option><option>Footwear</option><option>Underwear</option><option>Socks</option><option>Accessory</option></select></div>
+    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="w-cat"><option>T-Shirts</option><option>Brand T-Shirts</option><option>Polo</option><option>Hoodies</option><option>Jackets</option><option>Coats</option><option>Dress Shirts</option><option>Football Shirts</option><option>Gym T-Shirts</option><option>Pants</option><option>Shorts & Bermudas</option><option>Shoes & Footwear</option><option>Boxer Briefs</option><option>Socks</option><option>Accessories</option></select></div>
     <div class="fg"><label class="flabel">Color</label><select class="fselect" id="w-color"><option>Black</option><option>White</option><option>Gray</option><option>Navy Blue</option><option>Light Blue</option><option>Beige</option><option>Brown</option><option>Green</option><option>Red</option><option>Pink</option><option>Yellow</option><option>Colorful</option><option>Varied</option><option>Patterned</option></select></div>
   </div>
   <div class="fg">
     <label class="flabel">Occasions (select all that apply — more = more versatile)</label>
     <div class="ctx-wrap" id="ctx-wish" onclick="ctxToggle(event,'wish')">
 <span class="ctx-pill" data-ctx="Clinic">Clinic</span><span class="ctx-pill" data-ctx="Work">Work</span><span class="ctx-pill" data-ctx="Formal Event">Formal Event</span><span class="ctx-pill" data-ctx="College">College</span><span class="ctx-pill" data-ctx="Gym">Gym</span><span class="ctx-pill" data-ctx="Go Out">Go Out</span><span class="ctx-pill" data-ctx="Club">Club</span><span class="ctx-pill" data-ctx="Stay Home">Stay Home</span><span class="ctx-pill" data-ctx="Date Night">Date Night</span>
-    </div>
+</div>
   </div>
   <div class="fg"><label class="flabel">Source</label><select class="fselect" id="w-src"><option value="cssbuy">CSSBuy</option><option value="online">Online</option><option value="br">Brazil</option></select></div>
   <div class="fg"><label class="flabel">Link</label><input class="finput" id="w-link" placeholder="Product URL"></div>
@@ -1203,7 +1432,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
   <div class="modal-title">New Look</div>
   <div class="frow">
     <div class="fg"><label class="flabel">Look Name</label><input class="finput" id="lk-name" placeholder="e.g. Casual Friday, Night Out..."></div>
-    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="lk-cat"><option>Clinic / Work</option><option>Social / Night Out</option><option>Casual / Everyday</option><option>Gym / Training</option><option>Boxing</option><option>Formal / Event</option><option>Beach / Summer</option><option>Home / Relaxed</option></select></div>
+    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="lk-cat"><option>Clinic / Work</option><option>Social / Night Out</option><option>Casual / Everyday</option><option>Gym / Training</option><option>Formal / Event</option><option>Beach / Summer</option><option>Home / Relaxed</option><option>Date Night</option></select></div>
   </div>
   <div class="fg">
     <label class="flabel">Photo</label>
@@ -1218,7 +1447,7 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
     <label class="flabel">Occasions</label>
     <div class="ctx-wrap" id="ctx-look" onclick="ctxToggle(event,'look')">
 <span class="ctx-pill" data-ctx="Clinic">Clinic</span><span class="ctx-pill" data-ctx="Work">Work</span><span class="ctx-pill" data-ctx="Formal Event">Formal Event</span><span class="ctx-pill" data-ctx="College">College</span><span class="ctx-pill" data-ctx="Gym">Gym</span><span class="ctx-pill" data-ctx="Go Out">Go Out</span><span class="ctx-pill" data-ctx="Club">Club</span><span class="ctx-pill" data-ctx="Stay Home">Stay Home</span><span class="ctx-pill" data-ctx="Date Night">Date Night</span>
-    </div>
+</div>
   </div>
   <div class="fg">
     <label class="flabel" style="margin-bottom:10px">Pieces <span style="font-weight:400;color:var(--muted)">(describe each item, select optionally)</span></label>
@@ -1254,22 +1483,65 @@ function load(){
   }catch(e){}
 }
 function exportData(){
-  const blob=new Blob([JSON.stringify({items,wishlist,sellers,looks},null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='armario-backup.json';a.click();
+  const payload={
+    items, wishlist, sellers, looks,
+    invStatus,
+    inventoryData: INVENTORY_DATA,
+    shoppingList,
+    exportedAt: new Date().toISOString(),
+    version: 2,
+  };
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='wardrobe-backup.json';
+  a.click();
 }
+// Legacy cat name migration map
+const CAT_MIGRATE={'T-Shirt':'T-Shirts','Polo':'Polo','Hoodie':'Hoodies',
+  'Jacket':'Jackets','Overcoat':'Coats','Dress Shirt':'Dress Shirts',
+  'Football Shirt':'Football Shirts','Gym Tank':'Gym T-Shirts',
+  'Pants':'Pants','Jeans':'Pants','Shorts':'Shorts & Bermudas',
+  'Footwear':'Shoes & Footwear','Underwear':'Boxer Briefs','Socks':'Socks',
+  'Accessory':'Accessories','Sport':'Gym T-Shirts','Blazer':'Jackets',
+  'Coat':'Coats','Dress':'Accessories','Skirt':'Accessories',
+};
+function migrateCat(cat){return CAT_MIGRATE[cat]||cat;}
 function importData(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=ev=>{try{
     const d=JSON.parse(ev.target.result);
-    if(d.items)items=d.items;if(d.wishlist)wishlist=d.wishlist;
-    if(d.sellers)sellers=d.sellers;if(d.looks)looks=d.looks;
-    ni=Math.max(...items.map(x=>x.id),0)+1;
-    nw=Math.max(...wishlist.map(x=>x.id),0)+1;
-    ns=Math.max(...sellers.map(x=>x.id),0)+1;
-    nl=Math.max(...looks.map(x=>x.id),0)+1;
-    save();go('dashboard');
-  }catch{alert('Invalid file')}};
+    // ── Wardrobe items
+    if(d.items) items=d.items.map(it=>({...it,cat:migrateCat(it.cat)}));
+    if(d.wishlist) wishlist=d.wishlist.map(w=>({...w,cat:migrateCat(w.cat)}));
+    if(d.sellers) sellers=d.sellers;
+    if(d.looks) looks=d.looks;
+    // ── Missing items status (which pieces you have)
+    if(d.invStatus) Object.assign(invStatus, d.invStatus);
+    // ── Custom inventory structure (renamed categories / added items)
+    if(d.inventoryData && Array.isArray(d.inventoryData)){
+      INVENTORY_DATA.length=0;
+      d.inventoryData.forEach(cat=>INVENTORY_DATA.push(cat));
+    }
+    // ── Shopping / Buy Plan
+    if(d.shoppingList && Array.isArray(d.shoppingList)){
+      shoppingList.length=0;
+      d.shoppingList.forEach(s=>shoppingList.push(s));
+    }
+    // ── IDs
+    ni=items.length?Math.max(...items.map(x=>x.id))+1:1;
+    nw=wishlist.length?Math.max(...wishlist.map(x=>x.id))+1:1;
+    ns=sellers.length?Math.max(...sellers.map(x=>x.id))+1:1;
+    nl=looks.length?Math.max(...looks.map(x=>x.id))+1:1;
+    // ── Persist everything
+    save();
+    saveInv();
+    saveInventory();
+    saveShopping();
+    renderDash();go('dashboard');
+    alert('✓ Imported: '+items.length+' items · '+sellers.length+' sellers · '+INVENTORY_DATA.length+' inventory categories');
+  }catch(err){alert('Import failed: '+err.message)}};
   r.readAsText(f);
 }
 
@@ -1282,7 +1554,7 @@ const colorMap={'White':'#f5f5f0','Black':'#1a1a1a','Gray':'#9e9e9e','Navy Blue'
 
 // ══ NAV ══
 let wardrobeView='grid';
-const pageThemes={dashboard:'dashboard',wardrobe:'wardrobe',wishlist:'wishlist',needs:'needs',sellers:'sellers',looks:'looks'};
+const pageThemes={dashboard:'dashboard',wardrobe:'wardrobe',wishlist:'wishlist',needs:'needs',sellers:'sellers',looks:'looks',shopping:'shopping'};
 function go(name){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
@@ -1297,6 +1569,7 @@ function go(name){
   if(name==='needs')renderNeeds();
   if(name==='sellers')renderSellers();
   if(name==='looks')renderLooks();
+  if(name==='shopping')renderShopping();
 }
 
 // ══ DASHBOARD ══
@@ -1306,6 +1579,9 @@ function renderDash(){
   document.getElementById('s-sellers').textContent=sellers.length;
   const tot=wishlist.reduce((s,w)=>s+w.price,0);
   document.getElementById('s-val').textContent='R$'+tot.toLocaleString('pt-BR');
+  const toBuy=INVENTORY_DATA.reduce((s,d)=>s+d.items.filter((_,i)=>(invStatus[d.cat+'_'+i]||'missing')==='missing'&&d.demand==='High').length,0);
+  const el=document.getElementById('s-tobuy');
+  if(el)el.textContent=toBuy;
   renderBar('ch-occ',countBy('occ'));
   renderBar('ch-cat',countBy('cat'));
   renderBar('ch-sea',countBy('season'));
@@ -1459,20 +1735,34 @@ function buyWish(id){
 }
 
 // ══ NEEDS — Excel inventory ══
-const INVENTORY_DATA=[
-  {cat:'Basic T-Shirts',items:[{n:'Premium T-Shirt #1',c:'Black'},{n:'Premium T-Shirt #2',c:'Black'},{n:'Premium T-Shirt #3',c:'Black'},{n:'Premium T-Shirt #4',c:'Black'},{n:'Premium T-Shirt #5',c:'White'},{n:'Premium T-Shirt #6',c:'White'},{n:'Premium T-Shirt #7',c:'White'},{n:'Premium T-Shirt #8',c:'White'},{n:'Mescla T-Shirt #1',c:'Gray'},{n:'Mescla T-Shirt #2',c:'Gray'}],ctxs:['Clinic','Everyday']},
-  {cat:'Polos',items:[{n:'Polo #1',c:'Black'},{n:'Polo #2',c:'Black'},{n:'Polo #3',c:'Charcoal'}],ctxs:['Clinic','Everyday']},
-  {cat:'Hoodies',items:[{n:'Premium Hoodie #1',c:'Black'},{n:'Premium Hoodie #2',c:'Black'},{n:'Hoodie #3',c:'Gray'},{n:'Hoodie #4',c:'Gray'}],ctxs:['Everyday','Social']},
-  {cat:'Jackets & Coats',items:[{n:'Slim Blazer #1',c:'Black'},{n:'Slim Blazer #2',c:'Gray'},{n:'Bomber Jacket',c:'Black'},{n:'Denim Jacket',c:'Indigo'},{n:'Overcoat',c:'Beige'}],ctxs:['Clinic','Work','Social']},
-  {cat:'Dress Shirts',items:[{n:'Social Shirt #1',c:'White'},{n:'Social Shirt #2',c:'White'},{n:'Black Shirt',c:'Black'},{n:'Linen Shirt',c:'Gray'}],ctxs:['Clinic','Work']},
-  {cat:'Football Shirts',items:[{n:'Favorite Team #1',c:'Varied'},{n:'Favorite Team #2',c:'Varied'},{n:'Favorite Team #3',c:'Varied'},{n:'Retro/Special #1',c:'Varied'},{n:'Retro/Special #2',c:'Varied'},{n:'Neutral Shirt',c:'White'}],ctxs:['Social','Leisure']},
-  {cat:'Gym T-Shirts',items:[{n:'Gym Tank #1',c:'Black'},{n:'Gym Tank #2',c:'Black'},{n:'Gym Tank #3',c:'Black'},{n:'Gym Tank #4',c:'Black'},{n:'Gym Tank #5',c:'Black'},{n:'Gym Tank #6',c:'White'},{n:'Gym Tank #7',c:'White'},{n:'Gym Tank #8',c:'Gray'},{n:'Gym Tank #9',c:'Gray'},{n:'Gym Tank #10',c:'Gray'}],ctxs:['Gym','Boxing']},
-  {cat:'Pants',items:[{n:'Slim Tailored #1',c:'Black'},{n:'Slim Tailored #2',c:'Black'},{n:'Slim Tailored #3',c:'Black'},{n:'Tailored #4',c:'Gray'},{n:'Tailored #5',c:'Gray'},{n:'Slim Jeans #1',c:'Black'},{n:'Slim Jeans #2',c:'Black'},{n:'Jeans #3',c:'Gray'}],ctxs:['Clinic','Work','Social']},
-  {cat:'Shorts & Bermudas',items:[{n:'Training Short #1',c:'Black'},{n:'Training Short #2',c:'Black'},{n:'Training Short #3',c:'Black'},{n:'Training Short #4',c:'Gray'},{n:'Training Short #5',c:'Gray'},{n:'Training Short #6',c:'Gray'},{n:'Boxing Bermuda #1',c:'Black'},{n:'Boxing Bermuda #2',c:'Black'},{n:'Boxing Bermuda #3',c:'Gray'}],ctxs:['Gym','Boxing']},
-  {cat:'Shoes & Footwear',items:[{n:'Oxford/Derby Shoes',c:'Black'},{n:'Colorful Sneakers #1',c:'Colorful'},{n:'Colorful Sneakers #2',c:'Colorful'},{n:'Skinny Sneakers #1',c:'Black'},{n:'Skinny Sneakers #2',c:'White'},{n:'Dressy Sneakers #1',c:'Black'},{n:'Dressy Sneakers #2',c:'White'},{n:'Everyday Sneakers #1',c:'White'},{n:'Everyday Sneakers #2',c:'Black'},{n:'House Sneakers',c:'Varied'},{n:'Training Shoes #1',c:'Varied'},{n:'Training Shoes #2',c:'Varied'},{n:'Chelsea Boot',c:'Black'}],ctxs:['Clinic','Work','Social','Gym']},
-  {cat:'Boxer Briefs',items:[{n:'Daily Boxer #1',c:'Black'},{n:'Daily Boxer #2',c:'Black'},{n:'Daily Boxer #3',c:'Black'},{n:'Daily Boxer #4',c:'Black'},{n:'Daily Boxer #5',c:'Black'},{n:'Daily Boxer #6',c:'Black'},{n:'Daily Boxer #7',c:'Black'},{n:'Daily Boxer #8',c:'Black'},{n:'Training Boxer #1',c:'Black'},{n:'Training Boxer #2',c:'Black'},{n:'Training Boxer #3',c:'Black'},{n:'Training Boxer #4',c:'Black'},{n:'Training Boxer #5',c:'Black'},{n:'Training Boxer #6',c:'Black'},{n:'Training Boxer #7',c:'Black'}],ctxs:['Everyday','Gym']},
-  {cat:'Socks',items:[{n:'Training Sock #1',c:'White'},{n:'Training Sock #2',c:'White'},{n:'Training Sock #3',c:'White'},{n:'Training Sock #4',c:'White'},{n:'Training Sock #5',c:'White'},{n:'Training Sock #6',c:'White'},{n:'Dress Sock #1',c:'Black'},{n:'Dress Sock #2',c:'Black'},{n:'Dress Sock #3',c:'Black'},{n:'Dress Sock #4',c:'Black'},{n:'Dress Sock #5',c:'Black'},{n:'No-show #1',c:'Black'},{n:'No-show #2',c:'Black'},{n:'Boxing Sock #1',c:'White'},{n:'Boxing Sock #2',c:'White'}],ctxs:['Gym','Work','Boxing']},
+// ══ INVENTORY (persisted) ══
+const DEFAULT_INVENTORY=[
+  {cat:'T-Shirts',demand:'High',items:[{n:'Premium T-Shirt #1',c:'Black'},{n:'Premium T-Shirt #2',c:'Black'},{n:'Premium T-Shirt #3',c:'Black'},{n:'Premium T-Shirt #4',c:'Black'},{n:'Premium T-Shirt #5',c:'White'},{n:'Premium T-Shirt #6',c:'White'},{n:'Premium T-Shirt #7',c:'White'},{n:'Premium T-Shirt #8',c:'White'},{n:'Mescla T-Shirt #1',c:'Gray'},{n:'Mescla T-Shirt #2',c:'Gray'}],ctxs:['Clinic','Work','College']},
+  {cat:'Brand T-Shirts',demand:'Medium',items:[{n:'Brand T-Shirt #1',c:'Black'},{n:'Brand T-Shirt #2',c:'White'},{n:'Brand T-Shirt #3',c:'Gray'},{n:'Brand T-Shirt #4',c:'Black'}],ctxs:['Go Out','Club','College']},
+  {cat:'Polo',demand:'Medium',items:[{n:'Polo #1',c:'Black'},{n:'Polo #2',c:'Black'},{n:'Polo #3',c:'Charcoal'}],ctxs:['Clinic','Work']},
+  {cat:'Hoodies',demand:'High',items:[{n:'Premium Hoodie #1',c:'Black'},{n:'Premium Hoodie #2',c:'Black'},{n:'Hoodie #3',c:'Gray'},{n:'Hoodie #4',c:'Gray'}],ctxs:['College','Stay Home','Go Out']},
+  {cat:'Jackets',demand:'High',items:[{n:'Slim Blazer #1',c:'Black'},{n:'Slim Blazer #2',c:'Gray'},{n:'Bomber Jacket',c:'Black'},{n:'Denim Jacket',c:'Indigo'}],ctxs:['Work','Go Out','Club']},
+  {cat:'Coats',demand:'Medium',items:[{n:'Overcoat #1',c:'Beige'},{n:'Overcoat #2',c:'Black'},{n:'Trench Coat',c:'Beige'}],ctxs:['Work','Formal Event','Go Out']},
+  {cat:'Dress Shirts',demand:'High',items:[{n:'Social Shirt #1',c:'White'},{n:'Social Shirt #2',c:'White'},{n:'Black Shirt',c:'Black'},{n:'Linen Shirt',c:'Gray'}],ctxs:['Clinic','Work','Formal Event']},
+  {cat:'Football Shirts',demand:'Low',items:[{n:'Favorite Team #1',c:'Varied'},{n:'Favorite Team #2',c:'Varied'},{n:'Favorite Team #3',c:'Varied'},{n:'Retro/Special #1',c:'Varied'},{n:'Retro/Special #2',c:'Varied'},{n:'Neutral Shirt',c:'White'}],ctxs:['Go Out','College']},
+  {cat:'Gym T-Shirts',demand:'High',items:[{n:'Gym Tank #1',c:'Black'},{n:'Gym Tank #2',c:'Black'},{n:'Gym Tank #3',c:'Black'},{n:'Gym Tank #4',c:'Black'},{n:'Gym Tank #5',c:'Black'},{n:'Gym Tank #6',c:'White'},{n:'Gym Tank #7',c:'White'},{n:'Gym Tank #8',c:'Gray'},{n:'Gym Tank #9',c:'Gray'},{n:'Gym Tank #10',c:'Gray'}],ctxs:['Gym']},
+  {cat:'Pants',demand:'High',items:[{n:'Slim Tailored #1',c:'Black'},{n:'Slim Tailored #2',c:'Black'},{n:'Slim Tailored #3',c:'Black'},{n:'Tailored #4',c:'Gray'},{n:'Tailored #5',c:'Gray'},{n:'Slim Jeans #1',c:'Black'},{n:'Slim Jeans #2',c:'Black'},{n:'Jeans #3',c:'Gray'}],ctxs:['Clinic','Work','Go Out']},
+  {cat:'Shorts & Bermudas',demand:'Medium',items:[{n:'Training Short #1',c:'Black'},{n:'Training Short #2',c:'Black'},{n:'Training Short #3',c:'Black'},{n:'Training Short #4',c:'Gray'},{n:'Training Short #5',c:'Gray'},{n:'Training Short #6',c:'Gray'},{n:'Bermuda #1',c:'Black'},{n:'Bermuda #2',c:'Black'},{n:'Bermuda #3',c:'Gray'}],ctxs:['Gym','Stay Home']},
+  {cat:'Shoes & Footwear',demand:'High',items:[{n:'Oxford/Derby Shoes',c:'Black'},{n:'Colorful Sneakers #1',c:'Colorful'},{n:'Colorful Sneakers #2',c:'Colorful'},{n:'Skinny Sneakers #1',c:'Black'},{n:'Skinny Sneakers #2',c:'White'},{n:'Dressy Sneakers #1',c:'Black'},{n:'Dressy Sneakers #2',c:'White'},{n:'Everyday Sneakers #1',c:'White'},{n:'Everyday Sneakers #2',c:'Black'},{n:'House Sneakers',c:'Varied'},{n:'Training Shoes #1',c:'Varied'},{n:'Training Shoes #2',c:'Varied'},{n:'Chelsea Boot',c:'Black'}],ctxs:['Clinic','Work','Go Out','Gym']},
+  {cat:'Boxer Briefs',demand:'High',items:[{n:'Daily Boxer #1',c:'Black'},{n:'Daily Boxer #2',c:'Black'},{n:'Daily Boxer #3',c:'Black'},{n:'Daily Boxer #4',c:'Black'},{n:'Daily Boxer #5',c:'Black'},{n:'Daily Boxer #6',c:'Black'},{n:'Daily Boxer #7',c:'Black'},{n:'Daily Boxer #8',c:'Black'},{n:'Training Boxer #1',c:'Black'},{n:'Training Boxer #2',c:'Black'},{n:'Training Boxer #3',c:'Black'},{n:'Training Boxer #4',c:'Black'},{n:'Training Boxer #5',c:'Black'},{n:'Training Boxer #6',c:'Black'},{n:'Training Boxer #7',c:'Black'}],ctxs:['Gym','Stay Home']},
+  {cat:'Socks',demand:'High',items:[{n:'Training Sock #1',c:'White'},{n:'Training Sock #2',c:'White'},{n:'Training Sock #3',c:'White'},{n:'Training Sock #4',c:'White'},{n:'Training Sock #5',c:'White'},{n:'Training Sock #6',c:'White'},{n:'Dress Sock #1',c:'Black'},{n:'Dress Sock #2',c:'Black'},{n:'Dress Sock #3',c:'Black'},{n:'Dress Sock #4',c:'Black'},{n:'Dress Sock #5',c:'Black'},{n:'No-show #1',c:'Black'},{n:'No-show #2',c:'Black'}],ctxs:['Gym','Work']},
+  {cat:'Accessories',demand:'Low',items:[{n:'Belt #1',c:'Black'},{n:'Belt #2',c:'Brown'},{n:'Watch',c:'Silver'},{n:'Cap #1',c:'Black'},{n:'Cap #2',c:'White'},{n:'Sunglasses',c:'Black'}],ctxs:['Go Out','Club','Formal Event']},
 ];
+// ══ INVENTORY_DATA: merge defaults with persisted custom entries ══
+function loadInventory(){
+  try{
+    const saved=localStorage.getItem('wr_inventory_custom');
+    if(saved) return JSON.parse(saved);
+    return JSON.parse(JSON.stringify(DEFAULT_INVENTORY));
+  }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_INVENTORY)); }
+}
+function saveInventory(){localStorage.setItem('wr_inventory_custom',JSON.stringify(INVENTORY_DATA));}
+const INVENTORY_DATA=loadInventory();
 let invStatus=JSON.parse(localStorage.getItem('wr_inv')||'{}');
 function saveInv(){localStorage.setItem('wr_inv',JSON.stringify(invStatus))}
 let needsFilterCtx='all';
@@ -1510,20 +1800,35 @@ function renderNeeds(){
         <span class="inv-status-badge inv-badge-${st}">${lblMap[st]}</span>
       </div>`;
     }).join('');
+    const demandClr={High:'#ef4444',Medium:'#f59e0b',Low:'#6b7280'};
+    const demandBg={High:'#fee2e2',Medium:'#fef3c7',Low:'#f3f4f6'};
+    const demandTxt={High:'#991b1b',Medium:'#92400e',Low:'#374151'};
+    const demand=d.demand||'Medium';
+    const missingItems=d.items.filter((it,i)=>(invStatus[d.cat+'_'+i]||'missing')==='missing');
     return`<div class="need-card">
       <div class="need-header">
-        <div><div class="need-title">${d.cat}</div><div class="need-desc">${catHave} of ${catTotal}</div></div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="need-title">${d.cat}</div>
+            <span class="shop-demand sd-${demand}" style="font-size:10px;cursor:pointer" onclick="cycleCatDemand('${d.cat}')" title="Click to change demand">${demand} ▾</span>
+          </div>
+          <div class="need-desc">${catHave} of ${catTotal} · ${missingItems.length} missing</div>
+        </div>
         <span class="need-badge ${bdgCls}">${pct}%</span>
       </div>
       <div class="need-progress" style="margin-bottom:10px"><div class="need-bar ${barCls}" style="width:${pct}%"></div></div>
       <div class="inv-items-list">${rows}</div>
+      ${missingItems.length?`<div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">
+        <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);font-weight:500;margin-bottom:5px">To Buy (${missingItems.length})</div>
+        <div style="display:flex;flex-direction:column;gap:3px">${missingItems.map(it=>`<div style="font-size:11px;display:flex;align-items:center;gap:5px;color:var(--muted)"><span style="color:var(--danger)">✗</span> ${it.n} <span style="color:var(--muted2);font-size:10px">${it.c}</span></div>`).join('')}</div>
+      </div>`:''}
     </div>`;
   }).join('');
 }
 function cycleInv(key,el){
   const cur=invStatus[key]||'missing';
   const next={missing:'have',have:'replace',replace:'missing'}[cur];
-  invStatus[key]=next;saveInv();
+  invStatus[key]=next;saveInv();saveInventory();
   el.querySelector('.inv-dot').className='inv-dot inv-'+next;
   const b=el.querySelector('[class*="inv-badge"]');
   b.className='inv-status-badge inv-badge-'+next;
@@ -1575,7 +1880,7 @@ function filterLooks(f,btn){
 function renderLooks(){
   const g=document.getElementById('looks-grid');
   if(!looks.length){g.innerHTML=emptyState('No looks','Add looks for inspiration');return}
-  const filtered=looksFilter==='all'?looks:looks.filter(l=>l.cat===looksFilter);
+  const filtered=looksFilter==='all'?looks:looks.filter(l=>(l.contexts||[l.occ||'']).some(o=>o===looksFilter)||l.cat===looksFilter);
   const cards=filtered.map(l=>{
     const img=l.photo?`<img src="${l.photo}" alt="">`:`<div class="look-img-placeholder">✦</div>`;
     const catTag=l.cat?`<span class="look-ctx-tag" style="background:var(--accent);color:#fff;border-color:var(--accent)">${l.cat}</span>`:'';
@@ -1597,7 +1902,17 @@ function renderLooks(){
     </div>`;
   }).join('');
   g.innerHTML=`<div class="looks-masonry">${cards}</div>`;
-  g.querySelectorAll('.look-card').forEach(attachTilt);
+  g.querySelectorAll('.look-card').forEach(el=>{
+    if(el.dataset.tilt)return; el.dataset.tilt='1';
+    el.addEventListener('mousemove',e=>{
+      const r=el.getBoundingClientRect();
+      const x=((e.clientX-r.left)/r.width-0.5)*20;
+      const y=-((e.clientY-r.top)/r.height-0.5)*20;
+      el.style.transform=`perspective(600px) rotateX(${y}deg) rotateY(${x}deg) translateY(-4px) scale(1.02)`;
+      el.style.boxShadow=`${-x*.4}px ${Math.abs(y)*.4+8}px 32px rgba(0,0,0,0.28)`;
+    });
+    el.addEventListener('mouseleave',()=>{el.style.transform='';el.style.boxShadow='';});
+  });
 }
 function removeLook(id){looks=looks.filter(l=>l.id!==id);save();renderLooks()}
 
@@ -1729,7 +2044,7 @@ function addItem(){
   if(!name){alert('Please enter the item name');return}
   items.push({id:ni++,name,cat:document.getElementById('i-cat').value,color:document.getElementById('i-color').value,contexts:ctxGet('item'),occ:ctxGet('item').join('; ')||'General',season:document.getElementById('i-season').value,photo:photoData.item,link:document.getElementById('i-link').value.trim()||null,linkSource:curSrc,linkPrice:document.getElementById('i-lprice').value||null});
   save();
-  syncWardrobeToInventory(document.getElementById('i-cat').value);
+  syncWardrobeToInventory(document.getElementById('i-cat').value);markMissingFromLink();
   closeModal('item');
   // reset
   document.getElementById('i-name').value='';document.getElementById('i-link').value='';document.getElementById('i-lprice').value='';
@@ -1758,7 +2073,7 @@ function addSeller(){
 }
 
 // ══ LOOK LINE SYSTEM ══
-const WARDROBE_CATS=["T-Shirt","Polo","Hoodie","Jacket","Overcoat","Dress Shirt","Football Shirt","Gym Tank","Pants","Jeans","Shorts","Footwear","Underwear","Socks","Accessory"];
+const WARDROBE_CATS=['T-Shirts', 'Brand T-Shirts', 'Polo', 'Hoodies', 'Jackets', 'Coats', 'Dress Shirts', 'Football Shirts', 'Gym T-Shirts', 'Pants', 'Shorts & Bermudas', 'Shoes & Footwear', 'Boxer Briefs', 'Socks', 'Accessories'];
 let lookLines=[];
 function addLookLine(){
   const idx=lookLines.length;
@@ -1773,24 +2088,27 @@ function renderLookLines(){
   const wrap=document.getElementById('lk-lines-wrap');
   if(!wrap)return;
   if(!lookLines.length){
-    wrap.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px">No pieces added yet. Click + Add piece below.</div>';
+    wrap.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:8px 0">No pieces yet. Click <strong>+ Add piece</strong> below.</div>';
     return;
   }
   wrap.innerHTML=lookLines.map((line,i)=>{
-    const catOpts='<option value="">— Category (optional) —</option>'+WARDROBE_CATS.map(cat=>`<option value="${cat}" ${line.cat===cat?'selected':''}>{{cat}}</option>`).join('');
-    const wardrobeOpts=items.filter(it=>!line.cat||it.cat===line.cat||true);
-    const pieceOpts='<option value="">— From wardrobe (optional) —</option>'+wardrobeOpts.map(it=>`<option value="${it.id}" ${line.pieceId==it.id?'selected':''}>{{it.name}}</option>`).join('');
-    return`<div class="look-line">
-      <div class="look-line-num">{{i+1}}</div>
-      <div class="look-line-body">
-        <input class="look-line-desc" placeholder="Describe piece (e.g. White premium T-Shirt)" value="${line.desc}" onchange="lookLines[{{i}}].desc=this.value">
-        <div class="look-line-meta">
-          <select class="look-line-cat" onchange="lookLines[{{i}}].cat=this.value;renderLookLines()">${catOpts}</select>
-          ${wardrobeOpts.length?`<select class="look-line-piece-sel" onchange="lookLines[{{i}}].pieceId=this.value||null">${pieceOpts}</select>`:''}<label class="look-line-check"><input type="checkbox" ${line.have?'checked':''} onchange="lookLines[{{i}}].have=this.checked"> I have it</label>
-        </div>
-      </div>
-      <button class="look-line-rm" onclick="removeLookLine({{i}})">✕</button>
-    </div>`;
+    const catOpts='<option value="">— Category —</option>'+
+      WARDROBE_CATS.map(cat=>'<option value="'+cat+'" '+(line.cat===cat?'selected':'')+'>'+cat+'</option>').join('');
+    const filtered=line.cat?items.filter(it=>it.cat===line.cat):items;
+    const pieceOpts='<option value="">— From my wardrobe —</option>'+
+      filtered.map(it=>'<option value="'+it.id+'" '+(line.pieceId==it.id?'selected':'')+'>'+it.name+'</option>').join('');
+    return '<div class="look-line">'+
+      '<div class="look-line-num">'+(i+1)+'</div>'+
+      '<div class="look-line-body">'+
+        '<input class="look-line-desc" placeholder="e.g. White Premium T-Shirt, Black Cargo Pants..." value="'+line.desc.replace(/"/g,'&quot;')+'" oninput="lookLines['+i+'].desc=this.value">'+
+        '<div class="look-line-meta">'+
+          '<select class="look-line-cat" onchange="lookLines['+i+'].cat=this.value;renderLookLines()">'+catOpts+'</select>'+
+          (filtered.length?'<select class="look-line-piece-sel" onchange="lookLines['+i+'].pieceId=this.value||null">'+pieceOpts+'</select>':'')+
+          '<label class="look-line-check"><input type="checkbox" '+(line.have?'checked':'')+' onchange="lookLines['+i+'].have=this.checked"> Have it</label>'+
+        '</div>'+
+      '</div>'+
+      '<button class="look-line-rm" onclick="removeLookLine('+i+')">✕</button>'+
+    '</div>';
   }).join('');
 }
 function addLook(){
@@ -1936,6 +2254,7 @@ void main(){
 
 // Page → silk color mapping
 const SILK_COLORS={
+  shopping:'#22d3d3',
   lock:'#7B7481',
   dashboard:'#a0a3a8',
   wardrobe:'#4d8ef0',
@@ -2029,18 +2348,19 @@ function invAddCategory(){
 function saveInvEdit(){
   INVENTORY_DATA.length=0;
   invEditData.forEach(d=>INVENTORY_DATA.push(d));
+  saveInventory();
   closeModal('inv-edit');renderNeeds();
 }
 
 
 // ══ CAT MAP: wardrobe cat → INVENTORY_DATA cat ══
 const CAT_MAP={
-  'T-Shirt':'Basic T-Shirts','Polo':'Polos','Hoodie':'Hoodies',
-  'Jacket':'Jackets & Coats','Overcoat':'Jackets & Coats',
-  'Dress Shirt':'Dress Shirts','Football Shirt':'Football Shirts',
-  'Gym Tank':'Gym T-Shirts','Pants':'Pants','Jeans':'Pants',
-  'Shorts':'Shorts & Bermudas','Footwear':'Shoes & Footwear',
-  'Underwear':'Boxer Briefs','Socks':'Socks',
+  'T-Shirts':'T-Shirts','Brand T-Shirts':'Brand T-Shirts','Polo':'Polo',
+  'Hoodies':'Hoodies','Jackets':'Jackets','Coats':'Coats',
+  'Dress Shirts':'Dress Shirts','Football Shirts':'Football Shirts',
+  'Gym T-Shirts':'Gym T-Shirts','Pants':'Pants',
+  'Shorts & Bermudas':'Shorts & Bermudas','Shoes & Footwear':'Shoes & Footwear',
+  'Boxer Briefs':'Boxer Briefs','Socks':'Socks','Accessories':'Accessories',
 };
 function syncWardrobeToInventory(wardrobeCat){
   const invCat=CAT_MAP[wardrobeCat];
@@ -2050,6 +2370,31 @@ function syncWardrobeToInventory(wardrobeCat){
   // find first missing item and mark as 'have'
   const idx=d.items.findIndex((_,i)=>(invStatus[d.cat+'_'+i]||'missing')==='missing');
   if(idx>=0){invStatus[d.cat+'_'+idx]='have';saveInv();}
+}
+
+
+// ══ MISSING ITEMS LINK ══
+function updateMissingLink(cat){
+  const sel=document.getElementById('i-missing-link');
+  if(!sel)return;
+  // map wardrobe cat → inventory cat
+  const d=INVENTORY_DATA.find(x=>x.cat===cat||x.cat.includes(cat)||cat.includes(x.cat.split(' ')[0]));
+  sel.innerHTML='<option value="">— Select missing piece —</option>';
+  if(!d)return;
+  d.items.forEach((it,i)=>{
+    const key=d.cat+'_'+i;
+    if((invStatus[key]||'missing')==='missing'){
+      const opt=document.createElement('option');
+      opt.value=key;opt.textContent=`${it.n} (${it.c})`;
+      sel.appendChild(opt);
+    }
+  });
+}
+// Auto-mark missing item as 'have' when item is added
+function markMissingFromLink(){
+  const key=document.getElementById('i-missing-link')?.value;
+  if(!key)return;
+  invStatus[key]='have';saveInv();saveInventory();
 }
 
 // ══ MULTI-CONTEXT ══
@@ -2068,6 +2413,159 @@ function ctxSet(key, arr){
 }
 function ctxReset(key){
   document.querySelectorAll('#ctx-'+key+' .ctx-pill').forEach(p=>p.classList.remove('selected'));
+}
+
+
+// ══ SHOPPING LIST ══
+let shoppingList = JSON.parse(localStorage.getItem('wr_shopping')||'[]');
+let shoppingSort = 'priority';
+function saveShopping(){localStorage.setItem('wr_shopping',JSON.stringify(shoppingList));}
+
+function buildShoppingListFromMissing(){
+  // Merge missing items from inventory into shopping list
+  INVENTORY_DATA.forEach(d=>{
+    d.items.forEach((it,i)=>{
+      const key=d.cat+'_'+i;
+      const st=invStatus[key]||'missing';
+      const id='shop_'+key;
+      if(st==='missing'){
+        if(!shoppingList.find(s=>s.id===id)){
+          shoppingList.push({id,name:it.n,color:it.c,cat:d.cat,demand:d.demand||'Medium',done:false,rank:shoppingList.length+1});
+        }
+      } else {
+        // Remove if now have
+        shoppingList=shoppingList.filter(s=>s.id!==id);
+      }
+    });
+  });
+  saveShopping();
+}
+
+function setSortShopping(s,btn){
+  shoppingSort=s;
+  document.querySelectorAll('#page-shopping .pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderShopping();
+}
+
+function renderShopping(){
+  buildShoppingListFromMissing();
+  const pending=shoppingList.filter(s=>!s.done);
+  const done=shoppingList.filter(s=>s.done);
+
+  // Summary cards
+  const demandCounts={High:0,Medium:0,Low:0};
+  pending.forEach(s=>demandCounts[s.demand]=(demandCounts[s.demand]||0)+1);
+  document.getElementById('shopping-summary-cards').innerHTML=`
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;font-weight:500">To Buy</div>
+      <div style="font-size:36px;font-weight:700;letter-spacing:-0.04em;line-height:1">${pending.length}</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">${done.length} completed</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;font-weight:500">By Demand</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+        <span style="padding:4px 10px;border-radius:99px;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:600">${demandCounts.High} High</span>
+        <span style="padding:4px 10px;border-radius:99px;background:#fef3c7;color:#92400e;font-size:12px;font-weight:600">${demandCounts.Medium} Medium</span>
+        <span style="padding:4px 10px;border-radius:99px;background:#f1f5f9;color:#64748b;font-size:12px;font-weight:600">${demandCounts.Low} Low</span>
+      </div>
+    </div>
+  `;
+
+  const demandOrder={High:0,Medium:1,Low:2};
+  let sorted=[...pending];
+  if(shoppingSort==='priority')  sorted.sort((a,b)=>demandOrder[a.demand]-demandOrder[b.demand]);
+  else if(shoppingSort==='demand') sorted.sort((a,b)=>demandOrder[a.demand]-demandOrder[b.demand]);
+  else if(shoppingSort==='category') sorted.sort((a,b)=>a.cat.localeCompare(b.cat));
+  else sorted.sort((a,b)=>(a.rank||999)-(b.rank||999));
+
+  const makeRow=(s,rank,isDone)=>{
+    const demCls='sd-'+s.demand;
+    const opacity=isDone?'opacity:0.4;':'';
+    return`<div class="shop-row" style="${opacity}" data-id="${s.id}">
+      <div class="shop-rank">${isDone?'✓':rank}</div>
+      <div class="shop-info">
+        <div class="shop-name" style="${isDone?'text-decoration:line-through':''}">${s.name}</div>
+        <div class="shop-meta">${s.cat} · ${s.color}</div>
+      </div>
+      <span class="shop-demand ${demCls}" onclick="cycleShopDemand('${s.id}')">${s.demand}</span>
+      <input type="checkbox" class="shop-check" ${isDone?'checked':''} onchange="toggleShopDone('${s.id}')">
+      <button class="shop-rm" onclick="removeShopItem('${s.id}')">✕</button>
+    </div>`;
+  };
+
+  let html=sorted.map((s,i)=>makeRow(s,i+1,false)).join('');
+  if(done.length){
+    html+=`<div style="padding:10px 18px;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;border-top:1px solid var(--border)">Completed (${done.length})</div>`;
+    html+=done.map(s=>makeRow(s,'',true)).join('');
+  }
+  document.getElementById('shopping-list-inner').innerHTML=html||'<div style="text-align:center;padding:40px;color:var(--muted)">Nothing missing — wardrobe complete! 🎉</div>';
+
+  // Drag to reorder (manual sort)
+  initShopDrag();
+}
+
+function cycleCatDemand(cat){
+  const d=INVENTORY_DATA.find(x=>x.cat===cat);
+  if(!d)return;
+  const cycle={High:'Medium',Medium:'Low',Low:'High'};
+  d.demand=cycle[d.demand||'Medium'];
+  saveInventory();
+  // update shopping list too
+  shoppingList.filter(s=>s.cat===cat).forEach(s=>s.demand=d.demand);
+  saveShopping();renderNeeds();
+}
+function cycleShopDemand(id){
+  const s=shoppingList.find(x=>x.id===id);
+  if(!s)return;
+  const cycle={High:'Medium',Medium:'Low',Low:'High'};
+  s.demand=cycle[s.demand];
+  // Also update INVENTORY_DATA
+  const catEntry=INVENTORY_DATA.find(d=>d.cat===s.cat);
+  if(catEntry) catEntry.demand=s.demand;
+  saveInventory();saveShopping();renderShopping();renderNeeds();
+}
+function toggleShopDone(id){
+  const s=shoppingList.find(x=>x.id===id);
+  if(!s)return;
+  s.done=!s.done;
+  if(s.done){
+    // Mark as have in inventory
+    const key=id.replace('shop_','');
+    invStatus[key]='have';saveInv();saveInventory();
+  }
+  saveShopping();renderShopping();
+}
+function removeShopItem(id){
+  shoppingList=shoppingList.filter(s=>s.id!==id);
+  saveShopping();renderShopping();
+}
+
+// Drag to reorder
+function initShopDrag(){
+  let dragging=null;
+  document.querySelectorAll('.shop-row').forEach(row=>{
+    row.addEventListener('dragstart',e=>{dragging=row;row.classList.add('dragging');});
+    row.addEventListener('dragend',()=>{dragging=null;row.classList.remove('dragging');});
+    row.addEventListener('dragover',e=>{
+      e.preventDefault();
+      if(!dragging||dragging===row)return;
+      const all=[...document.querySelectorAll('.shop-row:not(.dragging)')];
+      const idx=all.indexOf(row);
+      const dragId=dragging.dataset.id;
+      const targetId=row.dataset.id;
+      const di=shoppingList.findIndex(s=>s.id===dragId);
+      const ti=shoppingList.findIndex(s=>s.id===targetId);
+      if(di>-1&&ti>-1){
+        const [item]=shoppingList.splice(di,1);
+        shoppingList.splice(ti,0,item);
+        shoppingList.forEach((s,i)=>s.rank=i+1);
+        saveShopping();
+        dragging.parentNode.insertBefore(dragging,row);
+      }
+    });
+    row.setAttribute('draggable','true');
+  });
 }
 
 // ══ INIT ══
