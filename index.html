@@ -612,6 +612,11 @@ input[type="checkbox"]:not(:checked):hover::after,
 /* ── LOOK DETAIL close bounce ── */
 @keyframes closeIn{from{transform:rotate(0deg)}to{transform:rotate(90deg)}}
 
+
+/* ── EDIT BUTTON ── */
+.edit-btn{color:var(--muted)!important}
+.edit-btn:hover{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important;transform:scale(1.15) rotate(-6deg)!important}
+
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:64px 24px;color:var(--muted)}
 .empty-icon{font-size:40px;margin-bottom:12px}
@@ -1193,18 +1198,19 @@ input[type="checkbox"]:not(:checked):hover::after,
   <div class="toolbar" style="margin-bottom:16px">
     <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;padding:4px 2px">Category</span>
     <button class="pill active" id="w-cat-all" onclick="setWFilter('cat','all',this)">All</button>
-    <button class="pill" onclick="setWFilter('cat','T-Shirt',this)">T-Shirt</button>
+    <button class="pill" onclick="setWFilter('cat','T-Shirts',this)">T-Shirts</button>
+    <button class="pill" onclick="setWFilter('cat','Brand T-Shirts',this)">Brand</button>
     <button class="pill" onclick="setWFilter('cat','Polo',this)">Polo</button>
-    <button class="pill" onclick="setWFilter('cat','Hoodie',this)">Hoodie</button>
-    <button class="pill" onclick="setWFilter('cat','Jacket',this)">Jacket</button>
-    <button class="pill" onclick="setWFilter('cat','Overcoat',this)">Overcoat</button>
-    <button class="pill" onclick="setWFilter('cat','Dress Shirt',this)">Shirt</button>
-    <button class="pill" onclick="setWFilter('cat','Football Shirt',this)">Football</button>
-    <button class="pill" onclick="setWFilter('cat','Gym Tank',this)">Gym</button>
+    <button class="pill" onclick="setWFilter('cat','Hoodies',this)">Hoodies</button>
+    <button class="pill" onclick="setWFilter('cat','Jackets',this)">Jackets</button>
+    <button class="pill" onclick="setWFilter('cat','Coats',this)">Coats</button>
+    <button class="pill" onclick="setWFilter('cat','Dress Shirts',this)">Shirt</button>
+    <button class="pill" onclick="setWFilter('cat','Football Shirts',this)">Football</button>
+    <button class="pill" onclick="setWFilter('cat','Gym T-Shirts',this)">Gym</button>
     <button class="pill" onclick="setWFilter('cat','Pants',this)">Pants</button>
-    <button class="pill" onclick="setWFilter('cat','Jeans',this)">Jeans</button>
-    <button class="pill" onclick="setWFilter('cat','Shorts',this)">Shorts</button>
-    <button class="pill" onclick="setWFilter('cat','Footwear',this)">Footwear</button>
+    <button class="pill" onclick="setWFilter('cat','Pants',this)">Jeans</button>
+    <button class="pill" onclick="setWFilter('cat','Shorts & Bermudas',this)">Shorts</button>
+    <button class="pill" onclick="setWFilter('cat','Shoes & Footwear',this)">Footwear</button>
     
     
     
@@ -1494,7 +1500,10 @@ function exportData(){
   const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='wardrobe-backup.json';
+  const _now=new Date();
+  const _p=n=>String(n).padStart(2,'0');
+  const _ds=`${_now.getFullYear()}-${_p(_now.getMonth()+1)}-${_p(_now.getDate())}_${_p(_now.getHours())}h${_p(_now.getMinutes())}`;
+  a.download=`wardrobe-${_ds}.json`;
   a.click();
 }
 // Legacy cat name migration map
@@ -1513,8 +1522,27 @@ function importData(e){
   r.onload=ev=>{try{
     const d=JSON.parse(ev.target.result);
     // ── Wardrobe items
-    if(d.items) items=d.items.map(it=>({...it,cat:migrateCat(it.cat)}));
-    if(d.wishlist) wishlist=d.wishlist.map(w=>({...w,cat:migrateCat(w.cat)}));
+    if(d.items) items=d.items.map(it=>({
+      ...it,
+      cat: migrateCat(it.cat),
+      contexts: it.contexts || (it.occ ? it.occ.split('; ').filter(Boolean) : []),
+      occ: it.occ || (it.contexts ? it.contexts.join('; ') : 'General'),
+      photo: it.photo || null,
+      link: it.link || null,
+      linkSource: it.linkSource || 'online',
+      linkPrice: it.linkPrice || null,
+      season: it.season || 'All seasons',
+    }));
+    if(d.wishlist) wishlist=d.wishlist.map(w=>({
+      ...w,
+      cat: migrateCat(w.cat),
+      occs: w.occs || (w.occ ? w.occ.split(', ').filter(Boolean) : []),
+      photo: w.photo || null,
+      link: w.link || null,
+      price: w.price || 0,
+      priority: w.priority || 'Medium',
+      src: w.src || 'online',
+    }));
     if(d.sellers) sellers=d.sellers;
     if(d.looks) looks=d.looks;
     // ── Missing items status (which pieces you have)
@@ -1642,9 +1670,12 @@ function wCardHTML(item){
     <div class="wcard-body">
       <div class="wcard-name">${item.name}</div>
       <div class="wcard-meta"><span class="tag">${item.cat}</span><span class="tag">${item.occ}</span></div>
-      <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:4px">
         ${src}
-        <button class="icon-btn" onclick="removeItem(${item.id})">✕</button>
+        <div style="display:flex;gap:4px">
+          <button class="icon-btn edit-btn" onclick="openEditItem(${item.id})" title="Edit">✎</button>
+          <button class="icon-btn" onclick="removeItem(${item.id})" title="Remove">✕</button>
+        </div>
       </div>
     </div>
   </div>`;
@@ -1662,7 +1693,8 @@ function wListHTML(item){
     <div><span class="swatch" style="background:${bg}"></span><span style="font-size:12px">${item.color}</span></div>
     <span class="tag">${item.occ}</span>
     ${src}
-    <button class="icon-btn" onclick="removeItem(${item.id})">✕</button>
+    <button class="icon-btn edit-btn" onclick="openEditItem(${item.id})" title="Edit">✎</button>
+    <button class="icon-btn" onclick="removeItem(${item.id})" title="Remove">✕</button>
   </div>`;
 }
 function removeItem(id){items=items.filter(i=>i.id!==id);save();renderWardrobe();document.querySelectorAll('.pill').forEach((b,i)=>{b.classList.toggle('active',i===0)})}
@@ -1995,7 +2027,7 @@ function closeModal(type){document.getElementById('modal-'+type).classList.remov
 document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
 
 // ══ PHOTO ══
-const photoData={item:null,look:null,wish:null};
+const photoData={item:null,look:null,wish:null,edit:null};
 function handlePhoto(key,e){
   const file=e.target.files[0];if(!file)return;
   const r=new FileReader();
@@ -2017,6 +2049,7 @@ function rmPhoto(key,e){
 // drag & drop
 ['item','look','wish'].forEach(key=>{
   const z=document.getElementById('pz-'+key);
+  if(!z)return;
   z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag')});
   z.addEventListener('dragleave',()=>z.classList.remove('drag'));
   z.addEventListener('drop',e=>{
@@ -2029,6 +2062,23 @@ function rmPhoto(key,e){
     }
   });
 });
+// Attach drag-drop to edit modal lazily when it opens
+function attachEditDragDrop(){
+  const z=document.getElementById('pz-edit');
+  if(!z||z._dragBound)return;
+  z._dragBound=true;
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag')});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{
+    e.preventDefault();z.classList.remove('drag');
+    const f=e.dataTransfer.files[0];
+    if(f&&f.type.startsWith('image/')){
+      const dt=new DataTransfer();dt.items.add(f);
+      document.getElementById('pf-edit').files=dt.files;
+      handlePhoto('edit',{target:{files:dt.files}});
+    }
+  });
+}
 
 // ══ LINK SOURCE ══
 let curSrc='cssbuy';
@@ -2397,6 +2447,78 @@ function markMissingFromLink(){
   invStatus[key]='have';saveInv();saveInventory();
 }
 
+
+// ══ EDIT ITEM ══
+let editingItemId = null;
+let editSrc = 'cssbuy';
+
+function openEditItem(id){
+  const item = items.find(i=>i.id===id);
+  if(!item) return;
+  editingItemId = id;
+  document.getElementById('ei-name').value = item.name || '';
+  document.getElementById('ei-color').value = item.color || 'Black';
+  // Fix option value for & entities
+  const catSel = document.getElementById('ei-cat');
+  for(let o of catSel.options){ if(o.value===item.cat||o.text===item.cat){ catSel.value=o.value; break; } }
+  document.getElementById('ei-season').value = item.season || 'All seasons';
+  document.getElementById('ei-link').value = item.link || '';
+  document.getElementById('ei-lprice').value = item.linkPrice || '';
+  // Photo
+  photoData.edit = item.photo || null;
+  const piEdit = document.getElementById('pi-edit');
+  const ppEdit = document.getElementById('pp-edit');
+  const prEdit = document.getElementById('pr-edit');
+  if(item.photo){
+    piEdit.src = item.photo; piEdit.style.display='block';
+    ppEdit.style.display='none'; prEdit.style.display='flex';
+  } else {
+    piEdit.style.display='none'; ppEdit.style.display='block'; prEdit.style.display='none';
+  }
+  // Occasions
+  ctxReset('edit');
+  const occs = item.contexts || (item.occ ? item.occ.split('; ').filter(Boolean) : []);
+  ctxSet('edit', occs);
+  // Source tabs
+  editSrc = item.linkSource || 'cssbuy';
+  const srcMap = {cssbuy:'CSSBuy',online:'Online',br:'Brazil'};
+  document.querySelectorAll('#ei-ltabs .ltab').forEach(t=>{
+    t.classList.toggle('active', t.textContent===srcMap[editSrc]);
+  });
+  attachEditDragDrop();
+  document.getElementById('modal-edit-item').classList.add('open');
+}
+
+function selEditSrc(src, btn){
+  editSrc = src;
+  document.querySelectorAll('#ei-ltabs .ltab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function saveEditItem(){
+  const item = items.find(i=>i.id===editingItemId);
+  if(!item){ closeModal('edit-item'); return; }
+  const name = document.getElementById('ei-name').value.trim();
+  if(!name){ alert('Please enter the item name'); return; }
+  const ctxs = ctxGet('edit');
+  Object.assign(item, {
+    name,
+    color: document.getElementById('ei-color').value,
+    cat: document.getElementById('ei-cat').value,
+    season: document.getElementById('ei-season').value,
+    contexts: ctxs,
+    occ: ctxs.join('; ') || 'General',
+    photo: photoData.edit,
+    link: document.getElementById('ei-link').value.trim() || null,
+    linkSource: editSrc,
+    linkPrice: document.getElementById('ei-lprice').value || null,
+  });
+  save();
+  closeModal('edit-item');
+  renderWardrobe();
+  renderDash();
+}
+
 // ══ MULTI-CONTEXT ══
 function ctxToggle(e, key){
   const pill=e.target.closest('.ctx-pill');
@@ -2621,6 +2743,51 @@ renderDash();
   <div class="mactions" style="margin-top:14px">
     <button class="btn-cancel" onclick="closeModal('inv-edit')">Close</button>
     <button class="btn-save" onclick="saveInvEdit()">Save Changes</button>
+  </div>
+</div>
+</div>
+
+
+<!-- EDIT ITEM MODAL -->
+<div class="overlay" id="modal-edit-item">
+<div class="modal wide">
+  <div class="modal-title">Edit Item</div>
+  <div class="fg">
+    <label class="flabel">Photo</label>
+    <div class="photo-zone" id="pz-edit" onclick="document.getElementById('pf-edit').click()">
+      <input type="file" id="pf-edit" accept="image/*" style="display:none" onchange="handlePhoto('edit',event)">
+      <div id="pp-edit"><div style="font-size:24px;margin-bottom:6px">📷</div><div style="font-size:12px;color:var(--muted)">Click or drag photo</div></div>
+      <img id="pi-edit" src="" alt="" style="display:none">
+      <button class="photo-rm" id="pr-edit" onclick="rmPhoto('edit',event)">✕</button>
+    </div>
+  </div>
+  <div class="fg"><label class="flabel">Item Name</label><input class="finput" id="ei-name" placeholder="e.g. White linen shirt"></div>
+  <div class="frow">
+    <div class="fg"><label class="flabel">Occasions</label>
+      <div class="ctx-wrap" id="ctx-edit" onclick="ctxToggle(event,'edit')"><span class="ctx-pill" data-ctx="Clinic">Clinic</span><span class="ctx-pill" data-ctx="Work">Work</span><span class="ctx-pill" data-ctx="Formal Event">Formal Event</span><span class="ctx-pill" data-ctx="College">College</span><span class="ctx-pill" data-ctx="Gym">Gym</span><span class="ctx-pill" data-ctx="Go Out">Go Out</span><span class="ctx-pill" data-ctx="Club">Club</span><span class="ctx-pill" data-ctx="Stay Home">Stay Home</span><span class="ctx-pill" data-ctx="Date Night">Date Night</span></div>
+    </div>
+    <div class="fg"><label class="flabel">Color</label><select class="fselect" id="ei-color"><option>White</option><option>Black</option><option>Gray</option><option>Navy Blue</option><option>Light Blue</option><option>Green</option><option>Red</option><option>Pink</option><option>Beige</option><option>Brown</option><option>Yellow</option><option>Patterned</option></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><label class="flabel">Category</label><select class="fselect" id="ei-cat"><option>T-Shirts</option><option>Brand T-Shirts</option><option>Polo</option><option>Hoodies</option><option>Jackets</option><option>Coats</option><option>Dress Shirts</option><option>Football Shirts</option><option>Gym T-Shirts</option><option>Pants</option><option>Shorts &amp; Bermudas</option><option>Shoes &amp; Footwear</option><option>Boxer Briefs</option><option>Socks</option><option>Accessories</option></select></div>
+    <div class="fg"><label class="flabel">Season</label><select class="fselect" id="ei-season"><option>Summer</option><option>Winter</option><option>Mid-season</option><option>All seasons</option></select></div>
+  </div>
+  <div class="divider"></div>
+  <div class="fg">
+    <label class="flabel">Purchase Link (optional)</label>
+    <div class="ltabs" id="ei-ltabs">
+      <button class="ltab active" onclick="selEditSrc('cssbuy',this)">CSSBuy</button>
+      <button class="ltab" onclick="selEditSrc('online',this)">Online</button>
+      <button class="ltab" onclick="selEditSrc('br',this)">Brazil</button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <input class="finput" id="ei-link" placeholder="Paste link here..." style="flex:1">
+      <input class="finput" id="ei-lprice" type="number" placeholder="R$" style="width:80px">
+    </div>
+  </div>
+  <div class="mactions">
+    <button class="btn-cancel" onclick="closeModal('edit-item')">Cancel</button>
+    <button class="btn-save" onclick="saveEditItem()">Save Changes</button>
   </div>
 </div>
 </div>
