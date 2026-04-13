@@ -335,17 +335,65 @@ body{font-family:'Inter',system-ui,-apple-system,'Helvetica Neue',sans-serif;bac
 
 /* ── INVENTORY (Missing Items) ── */
 .needs-overall{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;margin-bottom:20px}
-.inv-items-list{display:flex;flex-direction:column;gap:1px;margin-top:12px;max-height:220px;overflow-y:auto}
-.inv-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;cursor:pointer;transition:background 0.12s}
-.inv-item:hover{background:var(--bg)}
-.inv-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;transition:background 0.2s}
+.inv-items-list{display:flex;flex-direction:column;gap:3px;margin-top:12px;max-height:340px;overflow-y:auto}
+
+/* ── INV ITEM ROW ── */
+.inv-item{
+  padding:10px 12px;border-radius:10px;cursor:pointer;
+  transition:background 0.18s, border-color 0.18s, box-shadow 0.18s;
+  border:1px solid transparent;
+  background:var(--surface);
+}
+.inv-item:hover{
+  background:var(--bg);
+  border-color:var(--border);
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Colour dot */
+.inv-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;transition:background 0.2s,transform 0.2s}
+.inv-item:hover .inv-dot{transform:scale(1.4)}
 .inv-dot.inv-have{background:var(--success)}
 .inv-dot.inv-missing{background:var(--danger)}
 .inv-dot.inv-replace{background:var(--warn)}
-.inv-status-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;white-space:nowrap;transition:all 0.2s}
+
+/* Status badge */
+.inv-status-badge{
+  font-size:11px;font-weight:600;padding:4px 10px;
+  border-radius:99px;white-space:nowrap;
+  transition:all 0.18s;letter-spacing:0.01em;
+  cursor:pointer;
+}
+.inv-status-badge:hover{opacity:0.75;transform:scale(1.05)}
 .inv-badge-have{background:#dcfce7;color:#166534}
 .inv-badge-missing{background:#fee2e2;color:#991b1b}
 .inv-badge-replace{background:#fef3c7;color:#92400e}
+
+/* Ref button — centered below the item name */
+.inv-ref-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  margin-top:5px;
+  padding:4px 10px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg);
+  font-size:11px;font-family:'Inter',system-ui,sans-serif;
+  color:var(--muted);cursor:pointer;font-weight:400;
+  transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+}
+.inv-ref-btn:hover{
+  background:var(--accent);color:#fff;
+  border-color:var(--accent);
+  transform:translateY(-1px);
+  box-shadow:0 4px 12px rgba(0,0,0,0.15);
+}
+.inv-ref-btn svg{width:12px;height:12px;flex-shrink:0;transition:transform 0.18s}
+.inv-ref-btn:hover svg{transform:rotate(12deg)}
+.inv-ref-btn .ref-count-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:16px;height:16px;padding:0 5px;
+  border-radius:99px;background:var(--accent);color:#fff;
+  font-size:9px;font-weight:700;transition:background 0.18s;
+}
+.inv-ref-btn:hover .ref-count-pill{background:rgba(255,255,255,0.3);color:#fff}
 
 
 /* ── LOOKS PINTEREST ── */
@@ -616,6 +664,194 @@ input[type="checkbox"]:not(:checked):hover::after,
 /* ── EDIT BUTTON ── */
 .edit-btn{color:var(--muted)!important}
 .edit-btn:hover{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important;transform:scale(1.15) rotate(-6deg)!important}
+
+
+/* ═══════════════════════════════════════
+   REFERENCE PANEL — slide-in drawer
+   ═══════════════════════════════════════ */
+.ref-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0);
+  pointer-events:none;
+  transition:background 0.35s ease;
+}
+.ref-overlay.open{
+  background:rgba(0,0,0,0.45);
+  pointer-events:all;
+}
+.ref-drawer{
+  position:absolute;top:0;right:0;bottom:0;
+  width:480px;max-width:100vw;
+  background:var(--white);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.38s cubic-bezier(0.32,0,0.15,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+}
+.ref-overlay.open .ref-drawer{transform:translateX(0)}
+
+/* Header */
+.ref-header{
+  padding:20px 22px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-start;gap:12px;flex-shrink:0;
+}
+.ref-header-info{flex:1;min-width:0}
+.ref-item-name{
+  font-size:15px;font-weight:600;letter-spacing:-0.02em;
+  color:var(--text);margin-bottom:3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ref-item-meta{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.ref-status-badge{
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;
+}
+.ref-close{
+  width:32px;height:32px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--muted);cursor:pointer;font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;flex-shrink:0;
+}
+.ref-close:hover{background:var(--danger);color:#fff;border-color:var(--danger);transform:rotate(90deg)}
+
+/* Action row */
+.ref-actions{
+  padding:12px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;gap:8px;align-items:center;flex-shrink:0;
+}
+.ref-mark-btn{
+  padding:7px 14px;border-radius:8px;border:none;cursor:pointer;
+  font-size:12px;font-family:'Inter',system-ui,sans-serif;font-weight:500;
+  transition:all 0.15s;
+}
+.ref-mark-have{background:#dcfce7;color:#166534;}
+.ref-mark-have:hover{background:#bbf7d0;transform:translateY(-1px)}
+.ref-mark-replace{background:#fef3c7;color:#92400e;}
+.ref-mark-replace:hover{background:#fde68a;transform:translateY(-1px)}
+.ref-add-btn{
+  margin-left:auto;
+  padding:7px 16px;background:var(--accent);color:#fff;
+  border:none;border-radius:8px;font-size:12px;
+  font-family:'Inter',system-ui,sans-serif;font-weight:500;
+  cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px;
+}
+.ref-add-btn:hover{opacity:0.85;transform:translateY(-1px)}
+
+/* References list */
+.ref-list{flex:1;overflow-y:auto;padding:16px 22px;display:flex;flex-direction:column;gap:12px}
+.ref-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;color:var(--muted);text-align:center;gap:10px;padding:40px;
+}
+.ref-empty-icon{font-size:36px;opacity:0.5}
+.ref-empty-title{font-size:14px;font-weight:500;color:var(--muted2)}
+.ref-empty-sub{font-size:12px}
+
+/* Reference card */
+.ref-card{
+  border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;background:var(--surface);
+  transition:all 0.18s;
+  animation:refCardIn 0.25s ease forwards;
+}
+@keyframes refCardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.ref-card:hover{border-color:var(--accent);box-shadow:0 4px 18px rgba(0,0,0,0.12)}
+.ref-card-img{
+  width:100%;height:160px;object-fit:cover;display:block;
+  background:var(--bg);
+}
+.ref-card-img-placeholder{
+  width:100%;height:160px;background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;color:var(--muted2);
+}
+.ref-card-body{padding:12px 14px}
+.ref-card-name{font-size:13px;font-weight:500;margin-bottom:4px;letter-spacing:-0.01em}
+.ref-card-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.ref-card-price{font-size:14px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.ref-card-src{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
+.ref-card-actions{display:flex;gap:6px;align-items:center;justify-content:space-between}
+.ref-visit-btn{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:6px 12px;border-radius:7px;
+  border:1px solid var(--border);background:transparent;
+  font-size:11px;font-family:'Inter',system-ui,sans-serif;
+  color:var(--muted);cursor:pointer;text-decoration:none;
+  transition:all 0.15s;font-weight:500;
+}
+.ref-visit-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.ref-buy-btn{
+  padding:6px 12px;border-radius:7px;
+  border:none;background:#dcfce7;color:#166534;
+  font-size:11px;font-family:'Inter',system-ui,sans-serif;
+  cursor:pointer;font-weight:600;transition:all 0.15s;
+}
+.ref-buy-btn:hover{background:#bbf7d0;transform:scale(1.04)}
+.ref-del-btn{
+  width:28px;height:28px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;font-size:13px;
+  display:flex;align-items:center;justify-content:center;transition:all 0.15s;
+}
+.ref-del-btn:hover{background:#fee2e2;color:#991b1b;border-color:#fee2e2;transform:rotate(8deg)}
+
+/* Add form */
+.ref-add-form{
+  border-top:1px solid var(--border);padding:16px 22px;flex-shrink:0;
+  display:none;flex-direction:column;gap:10px;
+  background:var(--surface);
+}
+.ref-add-form.open{display:flex}
+.ref-form-title{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.ref-img-zone{
+  width:100%;height:100px;border:1.5px dashed var(--border);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:var(--bg);transition:all 0.15s;overflow:hidden;position:relative;
+  font-size:12px;color:var(--muted);gap:6px;
+}
+.ref-img-zone:hover{border-color:var(--accent);background:var(--surface)}
+.ref-img-zone img{width:100%;height:100%;object-fit:cover;display:block}
+.ref-img-zone .photo-rm{position:absolute;top:6px;right:6px;display:none}
+.ref-form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ref-form-footer{display:flex;gap:8px;margin-top:2px}
+.ref-src-tabs{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
+.ref-src-tab{flex:1;padding:6px 0;border:none;background:transparent;font-size:11px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;color:var(--muted);transition:all 0.13s;border-right:1px solid var(--border)}
+.ref-src-tab:last-child{border-right:none}
+.ref-src-tab.active{background:var(--accent);color:#fff;font-weight:500}
+.ref-src-tab:hover:not(.active){background:var(--bg)}
+
+@media(max-width:600px){.ref-drawer{width:100vw}}
+
+
+/* Ref button on inv item */
+.inv-ref-btn{
+  display:inline-flex;align-items:center;gap:4px;
+  background:none;border:none;
+  font-size:10px;color:var(--muted);cursor:pointer;
+  padding:2px 0;font-family:'Inter',system-ui,sans-serif;
+  transition:color 0.15s;text-decoration:none;letter-spacing:0.01em;
+}
+.inv-ref-btn:hover{color:var(--accent)}
+.inv-ref-btn .ref-count-pill{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:16px;height:16px;padding:0 4px;
+  border-radius:99px;background:var(--accent);color:#fff;
+  font-size:9px;font-weight:700;
+}
+
+
+/* Ref price filter pills */
+.ref-filter-pill{
+  padding:4px 11px;border-radius:99px;border:1px solid var(--border);
+  background:transparent;font-size:11px;font-family:'Inter',system-ui,sans-serif;
+  cursor:pointer;color:var(--muted);transition:all 0.13s;
+}
+.ref-filter-pill:hover{background:var(--bg);color:var(--text)}
+.ref-filter-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+
 
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:64px 24px;color:var(--muted)}
@@ -1489,11 +1725,18 @@ function load(){
   }catch(e){}
 }
 function exportData(){
+  // Collect all item refs
+  const allRefs={};
+  Object.keys(localStorage).filter(k=>k.startsWith('wr_refs_')).forEach(k=>{try{allRefs[k.replace('wr_refs_','')]=JSON.parse(localStorage.getItem(k));}catch(e){}});
+  const allOccs={};
+  Object.keys(localStorage).filter(k=>k.startsWith('wr_occs_')).forEach(k=>{try{allOccs[k.replace('wr_occs_','')]=JSON.parse(localStorage.getItem(k));}catch(e){}});
   const payload={
     items, wishlist, sellers, looks,
     invStatus,
     inventoryData: INVENTORY_DATA,
     shoppingList,
+    itemRefs: allRefs,
+    itemOccs: allOccs,
     exportedAt: new Date().toISOString(),
     version: 2,
   };
@@ -1563,6 +1806,13 @@ function importData(e){
     ns=sellers.length?Math.max(...sellers.map(x=>x.id))+1:1;
     nl=looks.length?Math.max(...looks.map(x=>x.id))+1:1;
     // ── Persist everything
+    // Restore item refs
+    if(d.itemRefs && typeof d.itemRefs==='object'){
+      Object.entries(d.itemRefs).forEach(([k,v])=>localStorage.setItem('wr_refs_'+k,JSON.stringify(v)));
+    }
+    if(d.itemOccs && typeof d.itemOccs==='object'){
+      Object.entries(d.itemOccs).forEach(([k,v])=>localStorage.setItem('wr_occs_'+k,JSON.stringify(v)));
+    }
     save();
     saveInv();
     saveInventory();
@@ -1826,10 +2076,34 @@ function renderNeeds(){
       const key=d.cat+'_'+i;
       const st=invStatus[key]||'missing';
       const lblMap={have:'✓ Have',missing:'✗ Missing',replace:'↻ Replace'};
-      return`<div class="inv-item" onclick="cycleInv('${key.replace(/'/g,"\'")}',this)">
-        <div class="inv-dot inv-${st}"></div>
-        <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${it.n}</div><div style="font-size:10px;color:var(--muted)">${it.c}</div></div>
-        <span class="inv-status-badge inv-badge-${st}">${lblMap[st]}</span>
+      const rc=getItemRefs(key).length;
+      const rcPill=rc>0?`<span class="ref-count-pill">${rc}</span>`:'';
+      // SVG icon: bookmark/tag — matches the site's minimal line style
+      const refIcon=`<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2h10v8.5L7 13 2 10.5V2z"/><line x1="5" y1="5.5" x2="9" y2="5.5"/><line x1="5" y1="7.5" x2="8" y2="7.5"/></svg>`;
+      const refBtn=(st==='missing'||st==='replace')
+        ?`<button class="inv-ref-btn" onclick="event.stopPropagation();openRefPanel(this)"
+            data-key="${key}" data-name="${it.n.replace(/"/g,'&quot;')}"
+            data-color="${it.c}" data-status="${st}" data-cat="${d.cat}">
+            ${refIcon} References ${rcPill}
+          </button>`
+        :'';
+      const itemOccs=getItemOccs(key);
+      const occTags=itemOccs.length
+        ?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:5px">`
+          +itemOccs.map(o=>`<span style="font-size:9px;padding:2px 6px;border-radius:99px;background:var(--bg);border:1px solid var(--border);color:var(--muted);letter-spacing:0.01em">${o}</span>`).join('')
+          +`</div>`
+        :'';
+      return`<div class="inv-item" onclick="cycleInv('${key.replace(/'/g,"\\'")}',this)">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="inv-dot inv-${st}" style="flex-shrink:0"></div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em">${it.n}</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:1px">${it.c}</div>
+          </div>
+          <span class="inv-status-badge inv-badge-${st}">${lblMap[st]}</span>
+        </div>
+        ${occTags}
+        ${refBtn?`<div style="margin-top:2px">${refBtn}</div>`:''}
       </div>`;
     }).join('');
     const demandClr={High:'#ef4444',Medium:'#f59e0b',Low:'#6b7280'};
@@ -2519,6 +2793,320 @@ function saveEditItem(){
   renderDash();
 }
 
+
+// ══ REFERENCE PANEL ══
+let refCurrentKey = null;
+let refCurrentItem = null;
+let refCurrentCat = null;
+let refPhotoData = null;
+let refSrc = 'cssbuy';
+
+// Storage
+function getItemRefs(key){ try{ return JSON.parse(localStorage.getItem('wr_refs_'+key)||'[]'); }catch(e){return[];} }
+function setItemRefs(key,refs){ localStorage.setItem('wr_refs_'+key,JSON.stringify(refs)); }
+
+// Open panel — called from item row
+function openRefPanel(btn){
+  const key = btn.dataset.key;
+  const itemName = btn.dataset.name;
+  const itemColor = btn.dataset.color;
+  const itemStatus = btn.dataset.status;
+  const catName = btn.dataset.cat;
+  refCurrentKey = key;
+  refCurrentItem = {n:itemName, c:itemColor};
+  refCurrentCat = catName;
+
+  // Header
+  document.getElementById('ref-item-name').textContent = itemName;
+  document.getElementById('ref-item-cat').textContent = catName + ' · ' + itemColor;
+
+  const stBadge = document.getElementById('ref-item-status-badge');
+  const stMap = {
+    missing: {text:'✗ Missing', cls:'inv-badge-missing'},
+    replace: {text:'↻ Replace', cls:'inv-badge-replace'},
+    have:    {text:'✓ Have',    cls:'inv-badge-have'},
+  };
+  const st = stMap[itemStatus] || stMap.missing;
+  stBadge.textContent = st.text;
+  stBadge.className = 'ref-status-badge ' + st.cls;
+
+  // Reset form
+  refCloseForm();
+  refPhotoData = null;
+  refSrc = 'cssbuy';
+  document.getElementById('ref-img-preview').style.display='none';
+  document.getElementById('ref-img-preview').src='';
+  document.getElementById('ref-img-rm').style.display='none';
+  document.getElementById('ref-img-zone').querySelector('span:first-of-type').style.display='';
+  document.getElementById('ref-img-zone').querySelector('span:last-of-type').style.display='';
+  ['ref-inp-name','ref-inp-price','ref-inp-link'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.ref-src-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+
+  // Load saved occasions
+  const savedOccs = getItemOccs(key);
+  document.querySelectorAll('#ctx-ref-item .ctx-pill').forEach(p=>{
+    p.classList.toggle('selected', savedOccs.includes(p.dataset.ctx));
+  });
+
+  // Reset price filter
+  refPriceFilter = 'all';
+  document.querySelectorAll('.ref-filter-pill').forEach((b,i)=>b.classList.toggle('active',i===0));
+
+  renderRefList();
+
+  // Open overlay
+  document.getElementById('ref-overlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeRefPanel(e){
+  if(e && e.target !== document.getElementById('ref-overlay')) return;
+  document.getElementById('ref-overlay').classList.remove('open');
+  document.body.style.overflow='';
+  refCloseForm();
+}
+
+function toggleRefForm(){
+  const form = document.getElementById('ref-add-form');
+  const isOpen = form.classList.contains('open');
+  if(isOpen){ refCloseForm(); }
+  else {
+    form.classList.add('open');
+    document.getElementById('ref-add-btn-label').textContent='✕ Cancel';
+    document.getElementById('ref-inp-name').focus();
+  }
+}
+function refCloseForm(){
+  document.getElementById('ref-add-form').classList.remove('open');
+  document.getElementById('ref-add-btn-label').textContent='+ Add Reference';
+}
+
+function refSelSrc(src, btn){
+  refSrc = src;
+  document.querySelectorAll('.ref-src-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function refHandlePhoto(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    refPhotoData = ev.target.result;
+    const prev = document.getElementById('ref-img-preview');
+    prev.src = refPhotoData;
+    prev.style.display = 'block';
+    document.getElementById('ref-img-rm').style.display = 'flex';
+    document.getElementById('ref-img-zone').querySelectorAll('span').forEach(s=>s.style.display='none');
+  };
+  reader.readAsDataURL(file);
+}
+function refRemovePhoto(e){
+  e.stopPropagation();
+  refPhotoData = null;
+  document.getElementById('ref-img-preview').style.display='none';
+  document.getElementById('ref-img-preview').src='';
+  document.getElementById('ref-img-rm').style.display='none';
+  document.getElementById('ref-img-zone').querySelectorAll('span').forEach(s=>s.style.display='');
+  document.getElementById('ref-img-input').value='';
+}
+
+// ── Price filter ──
+let refPriceFilter = 'all';
+function setRefFilter(f, btn){
+  refPriceFilter = f;
+  document.querySelectorAll('.ref-filter-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderRefList();
+}
+function refPassesFilter(price){
+  if(refPriceFilter==='all') return true;
+  if(refPriceFilter==='0-100') return price<=100;
+  if(refPriceFilter==='100-300') return price>100&&price<=300;
+  if(refPriceFilter==='300-600') return price>300&&price<=600;
+  if(refPriceFilter==='600+') return price>600;
+  return true;
+}
+
+// ── Occasion toggle for ref panel ──
+function refToggleOcc(e){
+  const pill=e.target.closest('.ctx-pill');
+  if(!pill||!refCurrentKey)return;
+  pill.classList.toggle('selected');
+  const occs=[...document.querySelectorAll('#ctx-ref-item .ctx-pill.selected')].map(p=>p.dataset.ctx);
+  setItemOccs(refCurrentKey,occs);
+  renderNeeds(); // refresh badges
+}
+
+function refSaveRef(){
+  const name = document.getElementById('ref-inp-name').value.trim();
+  const price = parseFloat(document.getElementById('ref-inp-price').value)||0;
+  const link = document.getElementById('ref-inp-link').value.trim();
+  if(!name && !link){ alert('Add at least a product name or link.'); return; }
+  const refs = getItemRefs(refCurrentKey);
+  const newRef = {
+    id: Date.now(),
+    name: name || 'Reference',
+    price, link: link||null,
+    src: refSrc,
+    photo: refPhotoData||null,
+    addedAt: new Date().toISOString(),
+  };
+  refs.push(newRef);
+  setItemRefs(refCurrentKey, refs);
+  refPhotoData = null;
+  ['ref-inp-name','ref-inp-price','ref-inp-link'].forEach(id=>document.getElementById(id).value='');
+  refRemovePhoto({stopPropagation:()=>{}});
+  refCloseForm();
+  renderRefList();
+  // Sync to Buy Plan
+  const st = invStatus[refCurrentKey]||'missing';
+  if(st!=='have') buildShoppingListFromMissing();
+  // ── Show elegant wishlist prompt inside panel ──
+  showRefWishPrompt(newRef);
+}
+
+function refDeleteRef(refId){
+  let refs = getItemRefs(refCurrentKey);
+  refs = refs.filter(r=>r.id!==refId);
+  setItemRefs(refCurrentKey, refs);
+  renderRefList();
+}
+
+function refMarkHave(){
+  invStatus[refCurrentKey]='have';
+  saveInv();saveInventory();
+  // Update status badge
+  const stBadge = document.getElementById('ref-item-status-badge');
+  stBadge.textContent='✓ Have';
+  stBadge.className='ref-status-badge inv-badge-have';
+  renderNeeds();
+}
+function refMarkReplace(){
+  invStatus[refCurrentKey]='replace';
+  saveInv();saveInventory();
+  const stBadge = document.getElementById('ref-item-status-badge');
+  stBadge.textContent='↻ Replace';
+  stBadge.className='ref-status-badge inv-badge-replace';
+  renderNeeds();
+}
+
+function renderRefList(){
+  const allRefs = getItemRefs(refCurrentKey);
+  const refs = allRefs.filter(r=>refPassesFilter(r.price||0));
+  const container = document.getElementById('ref-list');
+  if(!refs.length && allRefs.length>0){
+    container.innerHTML=`<div class="ref-empty">
+      <div class="ref-empty-icon">💰</div>
+      <div class="ref-empty-title">No refs in this range</div>
+      <div class="ref-empty-sub">Try a different price filter.</div>
+    </div>`;
+    return;
+  }
+  if(!allRefs.length){
+    container.innerHTML = `<div class="ref-empty">
+      <div class="ref-empty-icon">🔍</div>
+      <div class="ref-empty-title">No references yet</div>
+      <div class="ref-empty-sub">Add photos and links of products<br>you want to buy as replacements.</div>
+    </div>`;
+    return;
+  }
+  if(!refs.length){
+    container.innerHTML = `<div class="ref-empty">
+      <div class="ref-empty-icon">💸</div>
+      <div class="ref-empty-title">No items in this price range</div>
+      <div class="ref-empty-sub">Try a different filter above.</div>
+    </div>`;
+    return;
+  }
+  const srcLbl={cssbuy:'CSSBuy',online:'Online',br:'Brazil'};
+  const srcCls={cssbuy:'src-cssbuy',online:'src-online',br:'src-br'};
+  container.innerHTML = refs.map(r=>{
+    const imgEl = r.photo
+      ? `<img class="ref-card-img" src="${r.photo}" alt="${r.name}">`
+      : `<div class="ref-card-img-placeholder">🛍</div>`;
+    const linkEl = r.link
+      ? `<a class="ref-visit-btn" href="${r.link}" target="_blank">🔗 Visit</a>`
+      : `<span></span>`;
+    const priceEl = r.price
+      ? `<span class="ref-card-price">R$${r.price.toLocaleString('pt-BR')}</span>`
+      : '';
+    const srcEl = `<span class="ref-card-src ${srcCls[r.src]||'src-online'}">${srcLbl[r.src]||'Online'}</span>`;
+    return `<div class="ref-card">
+      ${imgEl}
+      <div class="ref-card-body">
+        <div class="ref-card-name">${r.name}</div>
+        <div class="ref-card-meta">
+          ${priceEl}${srcEl}
+        </div>
+        <div class="ref-card-actions">
+          ${linkEl}
+          <div style="display:flex;gap:6px">
+            <button class="ref-buy-btn" onclick="refMarkHave();refDeleteRef(${r.id})">✓ Bought</button>
+            <button class="ref-del-btn" onclick="refDeleteRef(${r.id})">✕</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Keyboard: Escape closes panel
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape' && document.getElementById('ref-overlay').classList.contains('open')){
+    document.getElementById('ref-overlay').classList.remove('open');
+    document.body.style.overflow='';
+  }
+});
+
+
+// ══ MISSING ITEMS OCCASIONS ══
+function getItemOccs(key){ try{ return JSON.parse(localStorage.getItem('wr_occs_'+key)||'[]'); }catch(e){return[];} }
+function setItemOccs(key,occs){ localStorage.setItem('wr_occs_'+key,JSON.stringify(occs)); }
+
+
+// ── Wishlist prompt after saving ref ──
+function showRefWishPrompt(ref){
+  const prompt = document.getElementById('ref-wish-prompt');
+  if(!prompt) return;
+  document.getElementById('ref-wish-prompt-name').textContent = '"'+ref.name+'"';
+  prompt._ref = ref;
+  prompt.style.display='flex';
+  prompt.style.animation='refCardIn 0.22s ease';
+}
+function refWishYes(){
+  const prompt = document.getElementById('ref-wish-prompt');
+  const ref = prompt?._ref;
+  prompt.style.display='none';
+  if(!ref) return;
+  closeRefPanel();
+  go('wishlist');
+  setTimeout(()=>{
+    openModal('wish');
+    document.getElementById('w-name').value = ref.name||'';
+    if(ref.price) document.getElementById('w-price').value = ref.price;
+    if(ref.link) document.getElementById('w-link').value = ref.link;
+    // Set source tab
+    const srcMap={cssbuy:'CSSBuy',online:'Online',br:'Brazil'};
+    document.querySelectorAll('#modal-wish .ltab').forEach(t=>{
+      t.classList.toggle('active', t.textContent===(srcMap[ref.src]||'Online'));
+    });
+    // Set photo if available
+    if(ref.photo){
+      photoData.wish = ref.photo;
+      const piw=document.getElementById('pi-wish');
+      if(piw){ piw.src=ref.photo; piw.style.display='block';
+        document.getElementById('pp-wish').style.display='none';
+        document.getElementById('pr-wish').style.display='flex';
+      }
+    }
+  }, 320);
+}
+function refWishNo(){
+  const prompt = document.getElementById('ref-wish-prompt');
+  if(prompt) prompt.style.display='none';
+}
+
 // ══ MULTI-CONTEXT ══
 function ctxToggle(e, key){
   const pill=e.target.closest('.ctx-pill');
@@ -2790,6 +3378,114 @@ renderDash();
     <button class="btn-save" onclick="saveEditItem()">Save Changes</button>
   </div>
 </div>
+</div>
+
+
+<!-- ══ REFERENCE PANEL ══ -->
+<div id="ref-overlay" class="ref-overlay" onclick="closeRefPanel(event)">
+  <div class="ref-drawer" id="ref-drawer">
+
+    <!-- Header -->
+    <div class="ref-header">
+      <div class="ref-header-info">
+        <div class="ref-item-name" id="ref-item-name">—</div>
+        <div class="ref-item-meta">
+          <span id="ref-item-cat" style="font-size:11px"></span>
+          <span id="ref-item-status-badge" class="ref-status-badge"></span>
+        </div>
+      </div>
+      <button class="ref-close" onclick="closeRefPanel()">✕</button>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="ref-actions">
+      <button class="ref-mark-btn ref-mark-have" onclick="refMarkHave()">✓ Mark as Have</button>
+      <button class="ref-mark-btn ref-mark-replace" onclick="refMarkReplace()">↻ Mark as Replace</button>
+      <button class="ref-add-btn" onclick="toggleRefForm()">
+        <span id="ref-add-btn-label">+ Add Reference</span>
+      </button>
+    </div>
+
+    <!-- Occasions for this item -->
+    <div style="padding:10px 22px;border-bottom:1px solid var(--border);background:var(--surface)" id="ref-occ-section">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px"><span style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);font-weight:500">Occasions — click to tag</span><span style="font-size:10px;color:var(--muted)">Saved automatically</span></div>
+      <div class="ctx-wrap" id="ctx-ref-item" onclick="refToggleOcc(event)" style="min-height:36px">
+        <span class="ctx-pill" data-ctx="Clinic">Clinic</span><span class="ctx-pill" data-ctx="Work">Work</span><span class="ctx-pill" data-ctx="Formal Event">Formal Event</span><span class="ctx-pill" data-ctx="College">College</span><span class="ctx-pill" data-ctx="Gym">Gym</span><span class="ctx-pill" data-ctx="Go Out">Go Out</span><span class="ctx-pill" data-ctx="Club">Club</span><span class="ctx-pill" data-ctx="Stay Home">Stay Home</span><span class="ctx-pill" data-ctx="Date Night">Date Night</span>
+      </div>
+    </div>
+
+    <!-- Price filter bar -->
+    <div style="padding:10px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap" id="ref-filter-bar">
+      <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);font-weight:500;white-space:nowrap">Filter by price</span>
+      <button class="ref-filter-pill active" onclick="setRefFilter('all',this)">All</button>
+      <button class="ref-filter-pill" onclick="setRefFilter('0-100',this)">R$0–100</button>
+      <button class="ref-filter-pill" onclick="setRefFilter('100-300',this)">R$100–300</button>
+      <button class="ref-filter-pill" onclick="setRefFilter('300-600',this)">R$300–600</button>
+      <button class="ref-filter-pill" onclick="setRefFilter('600+',this)">R$600+</button>
+    </div>
+
+    <!-- Add form (hidden by default) -->
+    <div class="ref-add-form" id="ref-add-form">
+      <div class="ref-form-title">New Reference</div>
+
+      <!-- Photo upload -->
+      <div class="ref-img-zone" id="ref-img-zone" onclick="document.getElementById('ref-img-input').click()">
+        <input type="file" id="ref-img-input" accept="image/*" style="display:none" onchange="refHandlePhoto(event)">
+        <span>📷</span><span>Add photo</span>
+        <img id="ref-img-preview" src="" alt="" style="display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover">
+        <button class="photo-rm" id="ref-img-rm" style="display:none" onclick="refRemovePhoto(event)">✕</button>
+      </div>
+
+      <div class="fg" style="margin-bottom:0">
+        <label class="flabel">Product Name</label>
+        <input class="finput" id="ref-inp-name" placeholder="e.g. Nike Air Force 1 '07">
+      </div>
+
+      <div class="ref-form-row">
+        <div class="fg" style="margin-bottom:0">
+          <label class="flabel">Price (R$)</label>
+          <input class="finput" id="ref-inp-price" type="number" placeholder="0">
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <label class="flabel">Source</label>
+          <div class="ref-src-tabs" id="ref-src-tabs">
+            <button class="ref-src-tab active" onclick="refSelSrc('cssbuy',this)">CSSBuy</button>
+            <button class="ref-src-tab" onclick="refSelSrc('online',this)">Online</button>
+            <button class="ref-src-tab" onclick="refSelSrc('br',this)">Brazil</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="fg" style="margin-bottom:0">
+        <label class="flabel">Link</label>
+        <input class="finput" id="ref-inp-link" placeholder="https://...">
+      </div>
+
+      <div class="ref-form-footer">
+        <button class="btn-cancel" style="flex:1" onclick="toggleRefForm()">Cancel</button>
+        <button class="btn-save" style="flex:2" onclick="refSaveRef()">Save Reference</button>
+      </div>
+    </div>
+
+    <!-- Wishlist prompt (shown after saving ref) -->
+    <div id="ref-wish-prompt" style="display:none;margin:12px 22px 0;padding:14px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:flex-start;gap:10px">
+        <span style="font-size:20px;flex-shrink:0">🛍</span>
+        <div>
+          <div style="font-size:13px;font-weight:600;margin-bottom:3px">Add to Wishlist?</div>
+          <div style="font-size:12px;color:var(--muted)">Send <span id="ref-wish-prompt-name" style="color:var(--text);font-weight:500"></span> to your wishlist to track it there too.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="refWishNo()" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;transition:all 0.15s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">Skip</button>
+        <button onclick="refWishYes()" style="flex:2;padding:8px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:12px;font-family:'Inter',system-ui,sans-serif;font-weight:600;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px" onmouseover="this.style.opacity='0.88'" onmouseout="this.style.opacity='1'">→ Go to Wishlist</button>
+      </div>
+    </div>
+
+    <!-- References list -->
+    <div class="ref-list" id="ref-list"></div>
+
+  </div>
 </div>
 
 </body>
