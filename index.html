@@ -680,16 +680,24 @@ input[type="checkbox"]:not(:checked):hover::after,
   pointer-events:all;
 }
 .ref-drawer{
-  position:absolute;top:0;right:0;bottom:0;
-  width:480px;max-width:100vw;
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-44%) scale(0.96);
+  width:560px;max-width:94vw;
+  max-height:88vh;
+  border-radius:20px;
   background:var(--white);
-  border-left:1px solid var(--border);
+  border:1px solid var(--border);
   display:flex;flex-direction:column;
-  transform:translateX(100%);
-  transition:transform 0.38s cubic-bezier(0.32,0,0.15,1);
-  box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+  opacity:0;
+  transition:transform 0.32s cubic-bezier(0.32,0,0.15,1), opacity 0.28s ease;
+  box-shadow:0 24px 80px rgba(0,0,0,0.28), 0 4px 16px rgba(0,0,0,0.12);
+  overflow:hidden;
 }
-.ref-overlay.open .ref-drawer{transform:translateX(0)}
+.ref-overlay.open .ref-drawer{
+  transform:translate(-50%,-50%) scale(1);
+  opacity:1;
+}
 
 /* Header */
 .ref-header{
@@ -741,7 +749,7 @@ input[type="checkbox"]:not(:checked):hover::after,
 .ref-add-btn:hover{opacity:0.85;transform:translateY(-1px)}
 
 /* References list */
-.ref-list{flex:1;overflow-y:auto;padding:16px 22px;display:flex;flex-direction:column;gap:12px}
+.ref-list{flex:1;overflow-y:auto;padding:12px 18px;display:flex;flex-direction:column;gap:8px}
 .ref-empty{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   height:100%;color:var(--muted);text-align:center;gap:10px;padding:40px;
@@ -752,28 +760,29 @@ input[type="checkbox"]:not(:checked):hover::after,
 
 /* Reference card */
 .ref-card{
+  display:flex;align-items:stretch;
   border:1px solid var(--border);border-radius:12px;
   overflow:hidden;background:var(--surface);
   transition:all 0.18s;
-  animation:refCardIn 0.25s ease forwards;
+  animation:refCardIn 0.2s ease forwards;
 }
-@keyframes refCardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.ref-card:hover{border-color:var(--accent);box-shadow:0 4px 18px rgba(0,0,0,0.12)}
-.ref-card-img{
-  width:100%;height:160px;object-fit:cover;display:block;
+@keyframes refCardIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ref-card:hover{border-color:var(--accent);box-shadow:0 4px 14px rgba(0,0,0,0.1)}
+/* thumbnail — left square */
+.ref-card-thumb{
+  width:88px;flex-shrink:0;
   background:var(--bg);
-}
-.ref-card-img-placeholder{
-  width:100%;height:160px;background:var(--bg);
   display:flex;align-items:center;justify-content:center;
-  font-size:32px;color:var(--muted2);
+  font-size:26px;color:var(--muted2);overflow:hidden;
 }
-.ref-card-body{padding:12px 14px}
-.ref-card-name{font-size:13px;font-weight:500;margin-bottom:4px;letter-spacing:-0.01em}
-.ref-card-meta{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap}
-.ref-card-price{font-size:14px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
+.ref-card-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+/* body — right side */
+.ref-card-body{flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ref-card-name{font-size:12px;font-weight:600;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.ref-card-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.ref-card-price{font-size:13px;font-weight:700;letter-spacing:-0.02em;color:var(--text)}
 .ref-card-src{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px}
-.ref-card-actions{display:flex;gap:6px;align-items:center;justify-content:space-between}
+.ref-card-actions{display:flex;gap:5px;align-items:center;margin-top:auto}
 .ref-visit-btn{
   display:inline-flex;align-items:center;gap:5px;
   padding:6px 12px;border-radius:7px;
@@ -799,14 +808,15 @@ input[type="checkbox"]:not(:checked):hover::after,
 
 /* Add form */
 .ref-add-form{
-  border-top:1px solid var(--border);padding:16px 22px;flex-shrink:0;
-  display:none;flex-direction:column;gap:10px;
+  border-top:1px solid var(--border);padding:14px 20px;flex-shrink:0;
+  display:none;flex-direction:column;gap:8px;
   background:var(--surface);
+  overflow-y:auto;max-height:52vh;
 }
 .ref-add-form.open{display:flex}
 .ref-form-title{font-size:12px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
 .ref-img-zone{
-  width:100%;height:100px;border:1.5px dashed var(--border);border-radius:8px;
+  width:100%;height:80px;border:1.5px dashed var(--border);border-radius:8px;
   display:flex;align-items:center;justify-content:center;cursor:pointer;
   background:var(--bg);transition:all 0.15s;overflow:hidden;position:relative;
   font-size:12px;color:var(--muted);gap:6px;
@@ -815,14 +825,14 @@ input[type="checkbox"]:not(:checked):hover::after,
 .ref-img-zone img{width:100%;height:100%;object-fit:cover;display:block}
 .ref-img-zone .photo-rm{position:absolute;top:6px;right:6px;display:none}
 .ref-form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.ref-form-footer{display:flex;gap:8px;margin-top:2px}
+.ref-form-footer{display:flex;gap:8px;margin-top:4px;flex-shrink:0;position:sticky;bottom:0;background:var(--surface);padding-top:8px;padding-bottom:2px}
 .ref-src-tabs{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden}
 .ref-src-tab{flex:1;padding:6px 0;border:none;background:transparent;font-size:11px;font-family:'Inter',system-ui,sans-serif;cursor:pointer;color:var(--muted);transition:all 0.13s;border-right:1px solid var(--border)}
 .ref-src-tab:last-child{border-right:none}
 .ref-src-tab.active{background:var(--accent);color:#fff;font-weight:500}
 .ref-src-tab:hover:not(.active){background:var(--bg)}
 
-@media(max-width:600px){.ref-drawer{width:100vw}}
+@media(max-width:600px){.ref-drawer{width:98vw;max-height:96vh;border-radius:14px}}
 
 
 /* Ref button on inv item */
@@ -852,6 +862,20 @@ input[type="checkbox"]:not(:checked):hover::after,
 .ref-filter-pill.active{background:var(--accent);color:#fff;border-color:var(--accent)}
 
 
+
+
+/* ── PRIORITY TAG ── */
+.inv-priority-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:99px;
+  border:1px solid var(--border);background:transparent;
+  font-size:13px;cursor:pointer;
+  transition:all 0.18s cubic-bezier(0.34,1.56,0.64,1);
+  color:var(--muted2);flex-shrink:0;padding:0;
+}
+.inv-priority-btn:hover{border-color:#f59e0b;color:#f59e0b;background:#fef3c7;transform:scale(1.18) rotate(15deg)}
+.inv-priority-btn.active{background:#f59e0b;color:#fff;border-color:#f59e0b;transform:scale(1.08)}
+.inv-priority-btn.active:hover{background:#d97706;border-color:#d97706;transform:scale(1.18) rotate(-10deg)}
 
 /* ── EMPTY STATE ── */
 .empty{text-align:center;padding:64px 24px;color:var(--muted)}
@@ -1511,6 +1535,18 @@ input[type="checkbox"]:not(:checked):hover::after,
     <div class="ph-left"><div class="overline">05 / References</div><h1>Sellers</h1></div>
     <div class="ph-right"><button class="btn-dark" onclick="openModal('seller')">+ Add Seller</button></div>
   </div>
+  <div class="toolbar" id="sellers-filter-bar" style="margin-bottom:20px">
+    <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;padding:4px 2px">Type</span>
+    <button class="pill active" onclick="setSellersFilter('all',this)">All</button>
+    <button class="pill" onclick="setSellersFilter('yupoo',this)">Yupoo</button>
+    <button class="pill" onclick="setSellersFilter('site',this)">Site</button>
+    <button class="pill" onclick="setSellersFilter('ig',this)">Instagram</button>
+    <span style="font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);font-weight:500;padding:4px 8px 4px 12px">Category</span>
+    <button class="pill" onclick="setSellersFilter('Clothing',this)">Clothing</button>
+    <button class="pill" onclick="setSellersFilter('Footwear',this)">Footwear</button>
+    <button class="pill" onclick="setSellersFilter('Accessories',this)">Accessories</button>
+    <button class="pill" onclick="setSellersFilter('Mixed',this)">Mixed</button>
+  </div>
   <div class="sellers-grid" id="sellers-grid"></div>
 </div>
 
@@ -1730,6 +1766,8 @@ function exportData(){
   Object.keys(localStorage).filter(k=>k.startsWith('wr_refs_')).forEach(k=>{try{allRefs[k.replace('wr_refs_','')]=JSON.parse(localStorage.getItem(k));}catch(e){}});
   const allOccs={};
   Object.keys(localStorage).filter(k=>k.startsWith('wr_occs_')).forEach(k=>{try{allOccs[k.replace('wr_occs_','')]=JSON.parse(localStorage.getItem(k));}catch(e){}});
+  const allPris={};
+  Object.keys(localStorage).filter(k=>k.startsWith('wr_pri_')).forEach(k=>{allPris[k.replace('wr_pri_','')]=localStorage.getItem(k);});
   const payload={
     items, wishlist, sellers, looks,
     invStatus,
@@ -1737,6 +1775,7 @@ function exportData(){
     shoppingList,
     itemRefs: allRefs,
     itemOccs: allOccs,
+    itemPriorities: allPris,
     exportedAt: new Date().toISOString(),
     version: 2,
   };
@@ -1812,6 +1851,9 @@ function importData(e){
     }
     if(d.itemOccs && typeof d.itemOccs==='object'){
       Object.entries(d.itemOccs).forEach(([k,v])=>localStorage.setItem('wr_occs_'+k,JSON.stringify(v)));
+    }
+    if(d.itemPriorities && typeof d.itemPriorities==='object'){
+      Object.entries(d.itemPriorities).forEach(([k,v])=>{ if(v==='1') localStorage.setItem('wr_pri_'+k,'1'); else localStorage.removeItem('wr_pri_'+k); });
     }
     save();
     saveInv();
@@ -2087,23 +2129,31 @@ function renderNeeds(){
             ${refIcon} References ${rcPill}
           </button>`
         :'';
-      const itemOccs=getItemOccs(key);
-      const occTags=itemOccs.length
-        ?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-top:5px">`
-          +itemOccs.map(o=>`<span style="font-size:9px;padding:2px 6px;border-radius:99px;background:var(--bg);border:1px solid var(--border);color:var(--muted);letter-spacing:0.01em">${o}</span>`).join('')
-          +`</div>`
+      const isPri=getItemPriority(key);
+      const safeKeyEsc=key.replace(/'/g,"\\'");
+      const priBtn=st!=='have'
+        ?`<button class="inv-priority-btn ${isPri?'active':''}" onclick="event.stopPropagation();toggleItemPriority('${safeKeyEsc}')" title="${isPri?'Remove priority':'Mark as priority'}">★</button>`
         :'';
-      return`<div class="inv-item" onclick="cycleInv('${key.replace(/'/g,"\\'")}',this)">
+      const itemOccs=getItemOccs(key);
+      const occTags=itemOccs.map(o=>`<span style="font-size:9px;padding:2px 6px;border-radius:99px;background:var(--bg);border:1px solid var(--border);color:var(--muted);letter-spacing:0.01em">${o}</span>`).join('');
+      const bottomRow=(occTags||priBtn||refBtn)
+        ?`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-top:5px">
+            ${occTags}
+            <span style="flex:1"></span>
+            ${priBtn}
+            ${refBtn}
+          </div>`
+        :'';
+      return`<div class="inv-item" onclick="cycleInv('${safeKeyEsc}',this)" style="${isPri?'border-color:rgba(245,158,11,0.3);background:rgba(255,251,235,0.08)':''}">
         <div style="display:flex;align-items:center;gap:9px">
           <div class="inv-dot inv-${st}" style="flex-shrink:0"></div>
           <div style="flex:1;min-width:0">
-            <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em">${it.n}</div>
+            <div class="inv-item-name-label" style="font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;letter-spacing:-0.01em;cursor:text" title="Double-click to rename" ondblclick="event.stopPropagation();startRenameInvItem('${d.cat}',${i},this.textContent,this)">${it.n}</div>
             <div style="font-size:10px;color:var(--muted);margin-top:1px">${it.c}</div>
           </div>
           <span class="inv-status-badge inv-badge-${st}">${lblMap[st]}</span>
         </div>
-        ${occTags}
-        ${refBtn?`<div style="margin-top:2px">${refBtn}</div>`:''}
+        ${bottomRow}
       </div>`;
     }).join('');
     const demandClr={High:'#ef4444',Medium:'#f59e0b',Low:'#6b7280'};
@@ -2153,22 +2203,41 @@ function cycleInv(key,el){
 }
 
 // ══ SELLERS ══
+let sellersFilter='all';
+function setSellersFilter(f,btn){
+  sellersFilter=f;
+  document.querySelectorAll('#sellers-filter-bar .pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSellers();
+}
 function renderSellers(){
   const g=document.getElementById('sellers-grid');
   if(!sellers.length){g.innerHTML=emptyState('No sellers','Add your favorite sellers');return}
   const typeCls={yupoo:'type-yupoo',site:'type-site',ig:'type-ig'};
   const typeLbl={yupoo:'Yupoo',site:'Site',ig:'Instagram'};
-  g.innerHTML=sellers.map(s=>{
+  let list=sellers;
+  if(sellersFilter!=='all') list=sellers.filter(s=>s.type===sellersFilter||s.cat===sellersFilter);
+  if(!list.length){g.innerHTML=emptyState('No sellers here','Try a different filter');return}
+  const refIcon=`<svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 2h10v8.5L7 13 2 10.5V2z"/><line x1="5" y1="5.5" x2="9" y2="5.5"/><line x1="5" y1="7.5" x2="8" y2="7.5"/></svg>`;
+  g.innerHTML=list.map(s=>{
     const brands=(s.brands||[]).map(b=>`<span class="tag">${b}</span>`).join('');
+    const rc=getItemRefs('seller_'+s.id).length;
+    const rcPill=rc>0?`<span class="ref-count-pill">${rc}</span>`:'';
     return`<div class="seller-card">
       <div class="seller-header">
         <div><div class="seller-name">${s.name}</div><div class="seller-type">${s.cat}</div></div>
         <span class="type-badge ${typeCls[s.type]}">${typeLbl[s.type]}</span>
       </div>
       ${brands?`<div class="seller-brands">${brands}</div>`:''}
-      <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px">
         ${s.link?`<a class="seller-link" href="${s.link}" target="_blank">🔗 Visit</a>`:'<span></span>'}
-        <button class="icon-btn" onclick="removeSeller(${s.id})">✕</button>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="inv-ref-btn" style="font-size:11px" onclick="openRefPanel(this)"
+            data-key="seller_${s.id}" data-name="${s.name.replace(/"/g,'&quot;')}"
+            data-color="${s.cat}" data-status="missing" data-cat="Sellers"
+            title="References">${refIcon} Refs ${rcPill}</button>
+          <button class="icon-btn" onclick="removeSeller(${s.id})">✕</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2368,7 +2437,7 @@ function addItem(){
   if(!name){alert('Please enter the item name');return}
   items.push({id:ni++,name,cat:document.getElementById('i-cat').value,color:document.getElementById('i-color').value,contexts:ctxGet('item'),occ:ctxGet('item').join('; ')||'General',season:document.getElementById('i-season').value,photo:photoData.item,link:document.getElementById('i-link').value.trim()||null,linkSource:curSrc,linkPrice:document.getElementById('i-lprice').value||null});
   save();
-  syncWardrobeToInventory(document.getElementById('i-cat').value);markMissingFromLink();
+  syncWardrobeToInventory(document.getElementById('i-cat').value, document.getElementById('i-name').value.trim());markMissingFromLink();
   closeModal('item');
   // reset
   document.getElementById('i-name').value='';document.getElementById('i-link').value='';document.getElementById('i-lprice').value='';
@@ -2686,14 +2755,43 @@ const CAT_MAP={
   'Shorts & Bermudas':'Shorts & Bermudas','Shoes & Footwear':'Shoes & Footwear',
   'Boxer Briefs':'Boxer Briefs','Socks':'Socks','Accessories':'Accessories',
 };
-function syncWardrobeToInventory(wardrobeCat){
-  const invCat=CAT_MAP[wardrobeCat];
-  if(!invCat)return;
+function syncWardrobeToInventory(wardrobeCat, itemName){
+  // 1. Try exact name match across all categories
+  if(itemName){
+    for(const d of INVENTORY_DATA){
+      const idx=d.items.findIndex((it,i)=>{
+        const key=d.cat+'_'+i;
+        const st=invStatus[key]||'missing';
+        return st!=='have' && it.n.toLowerCase().trim()===itemName.toLowerCase().trim();
+      });
+      if(idx>=0){
+        invStatus[d.cat+'_'+idx]='have';
+        saveInv();saveInventory();
+        return; // matched by name — done
+      }
+    }
+    // 2. Try partial name match (contains)
+    for(const d of INVENTORY_DATA){
+      const idx=d.items.findIndex((it,i)=>{
+        const key=d.cat+'_'+i;
+        const st=invStatus[key]||'missing';
+        const itName=it.n.toLowerCase();
+        const wName=itemName.toLowerCase();
+        return st!=='have' && (itName.includes(wName)||wName.includes(itName));
+      });
+      if(idx>=0){
+        invStatus[d.cat+'_'+idx]='have';
+        saveInv();saveInventory();
+        return;
+      }
+    }
+  }
+  // 3. Fallback: mark first missing in category
+  const invCat=CAT_MAP[wardrobeCat]||wardrobeCat;
   const d=INVENTORY_DATA.find(x=>x.cat===invCat);
   if(!d)return;
-  // find first missing item and mark as 'have'
   const idx=d.items.findIndex((_,i)=>(invStatus[d.cat+'_'+i]||'missing')==='missing');
-  if(idx>=0){invStatus[d.cat+'_'+idx]='have';saveInv();}
+  if(idx>=0){invStatus[d.cat+'_'+idx]='have';saveInv();saveInventory();}
 }
 
 
@@ -2787,6 +2885,7 @@ function saveEditItem(){
     linkSource: editSrc,
     linkPrice: document.getElementById('ei-lprice').value || null,
   });
+  syncWardrobeToInventory(item.cat, item.name);
   save();
   closeModal('edit-item');
   renderWardrobe();
@@ -3022,29 +3121,20 @@ function renderRefList(){
   const srcLbl={cssbuy:'CSSBuy',online:'Online',br:'Brazil'};
   const srcCls={cssbuy:'src-cssbuy',online:'src-online',br:'src-br'};
   container.innerHTML = refs.map(r=>{
-    const imgEl = r.photo
-      ? `<img class="ref-card-img" src="${r.photo}" alt="${r.name}">`
-      : `<div class="ref-card-img-placeholder">🛍</div>`;
-    const linkEl = r.link
-      ? `<a class="ref-visit-btn" href="${r.link}" target="_blank">🔗 Visit</a>`
-      : `<span></span>`;
-    const priceEl = r.price
-      ? `<span class="ref-card-price">R$${r.price.toLocaleString('pt-BR')}</span>`
-      : '';
+    const thumbEl = r.photo
+      ? `<img src="${r.photo}" alt="${r.name}">`
+      : `🛍`;
+    const priceEl = r.price ? `<span class="ref-card-price">R$${r.price.toLocaleString('pt-BR')}</span>` : '';
     const srcEl = `<span class="ref-card-src ${srcCls[r.src]||'src-online'}">${srcLbl[r.src]||'Online'}</span>`;
     return `<div class="ref-card">
-      ${imgEl}
+      <div class="ref-card-thumb">${thumbEl}</div>
       <div class="ref-card-body">
-        <div class="ref-card-name">${r.name}</div>
-        <div class="ref-card-meta">
-          ${priceEl}${srcEl}
-        </div>
+        <div class="ref-card-name" title="${r.name}">${r.name}</div>
+        <div class="ref-card-meta">${priceEl}${srcEl}</div>
         <div class="ref-card-actions">
-          ${linkEl}
-          <div style="display:flex;gap:6px">
-            <button class="ref-buy-btn" onclick="refMarkHave();refDeleteRef(${r.id})">✓ Bought</button>
-            <button class="ref-del-btn" onclick="refDeleteRef(${r.id})">✕</button>
-          </div>
+          ${r.link?`<a class="ref-visit-btn" href="${r.link}" target="_blank">🔗 Visit</a>`:''}
+          <button class="ref-buy-btn" onclick="refMarkHave();refDeleteRef(${r.id})" style="font-size:10px;padding:4px 9px">✓ Bought</button>
+          <button class="ref-del-btn" onclick="refDeleteRef(${r.id})">✕</button>
         </div>
       </div>
     </div>`;
@@ -3105,6 +3195,48 @@ function refWishYes(){
 function refWishNo(){
   const prompt = document.getElementById('ref-wish-prompt');
   if(prompt) prompt.style.display='none';
+}
+
+
+// ══ MISSING ITEMS PRIORITY ══
+function getItemPriority(key){ return localStorage.getItem('wr_pri_'+key)==='1'; }
+function toggleItemPriority(key){
+  const cur = getItemPriority(key);
+  if(cur) localStorage.removeItem('wr_pri_'+key);
+  else localStorage.setItem('wr_pri_'+key,'1');
+  renderNeeds();
+}
+
+
+// ══ INLINE RENAME MISSING ITEM ══
+function startRenameInvItem(catName, itemIdx, currentName, el){
+  el.contentEditable='true';
+  el.style.background='var(--white)';
+  el.style.borderRadius='4px';
+  el.style.padding='1px 4px';
+  el.style.outline='1px solid var(--accent)';
+  el.focus();
+  // select all text
+  const range=document.createRange();range.selectNodeContents(el);
+  const sel=window.getSelection();sel.removeAllRanges();sel.addRange(range);
+  el.dataset.origName=currentName;
+  el.onblur=()=>commitRenameInvItem(catName,itemIdx,el);
+  el.onkeydown=(e)=>{
+    if(e.key==='Enter'){e.preventDefault();el.blur();}
+    if(e.key==='Escape'){el.textContent=el.dataset.origName;el.blur();}
+  };
+}
+function commitRenameInvItem(catName, itemIdx, el){
+  el.contentEditable='false';
+  el.style.background='';el.style.borderRadius='';el.style.padding='';el.style.outline='';
+  el.onblur=null;el.onkeydown=null;
+  const newName=el.textContent.trim();
+  if(!newName){el.textContent=el.dataset.origName;return;}
+  const d=INVENTORY_DATA.find(x=>x.cat===catName);
+  if(!d||!d.items[itemIdx])return;
+  d.items[itemIdx].n=newName;
+  saveInventory();
+  renderNeeds();
 }
 
 // ══ MULTI-CONTEXT ══
@@ -3191,11 +3323,17 @@ function renderShopping(){
 
   const makeRow=(s,rank,isDone)=>{
     const demCls='sd-'+s.demand;
+    const priKey=s.id.replace('shop_','');
+    const isPri=getItemPriority(priKey);
     const opacity=isDone?'opacity:0.4;':'';
-    return`<div class="shop-row" style="${opacity}" data-id="${s.id}">
-      <div class="shop-rank">${isDone?'✓':rank}</div>
+    const priStar=isPri&&!isDone?`<span title="Priority" style="color:#f59e0b;font-size:13px;flex-shrink:0" >★</span>`:'';
+    return`<div class="shop-row" style="${opacity}${isPri&&!isDone?'border-left:3px solid #f59e0b;':''}" data-id="${s.id}">
+      <div class="shop-rank" style="min-width:22px">${isDone?'✓':rank}</div>
       <div class="shop-info">
-        <div class="shop-name" style="${isDone?'text-decoration:line-through':''}">${s.name}</div>
+        <div style="display:flex;align-items:center;gap:5px">
+          ${priStar}
+          <div class="shop-name" style="${isDone?'text-decoration:line-through':''}">${s.name}</div>
+        </div>
         <div class="shop-meta">${s.cat} · ${s.color}</div>
       </div>
       <span class="shop-demand ${demCls}" onclick="cycleShopDemand('${s.id}')">${s.demand}</span>
