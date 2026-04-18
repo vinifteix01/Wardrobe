@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Hub Pessoal · Estágio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & TOKENS ─────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #1a1a1c;
+  --surface:  #222224;
+  --surface2: #2a2a2e;
+  --surface3: #323236;
+  --border:   #2e2e34;
+  --border2:  #3a3a42;
+  --text:     #f0f0ec;
+  --text2:    #8a8a90;
+  --muted:    #55555c;
+  --accent:   #c8ff57;
+  --accent-dim: #8fb83a;
+  --accent-bg:  rgba(200,255,87,.1);
+  --purple:   #9b9fe8;
+  --purple-bg: rgba(155,159,232,.12);
+  --warn:     #ffa940;
+  --warn-bg:  rgba(255,169,64,.1);
+  --danger:   #ff5f57;
+  --danger-bg:rgba(255,95,87,.1);
+  --radius:   10px;
+  --radius-lg:14px;
+}
+html,body{height:100%;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit}
+input:focus,select:focus,textarea:focus{outline:none}
+input[type=date],input[type=time]{color-scheme:dark}
+a{color:inherit;text-decoration:none}
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.app{display:flex;flex-direction:column;height:100vh;overflow:hidden}
+
+/* TOPBAR */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:52px;background:var(--surface);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.logo{
+  width:30px;height:30px;background:var(--accent);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--bg);flex-shrink:0;
+}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:-.2px}
+.topbar-nav{display:flex;gap:3px;margin-left:24px}
+.nav-btn{
+  padding:5px 14px;font-size:12px;font-weight:500;border-radius:20px;
+  color:var(--text2);transition:all .15s;
+}
+.nav-btn:hover{background:var(--surface2);color:var(--text)}
+.nav-btn.active{background:var(--accent);color:var(--bg)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.top-meta{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* BODY SPLIT */
+.body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{
+  width:210px;flex-shrink:0;background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow-y:auto;
+}
+.sb-section{padding:16px 12px 8px}
+.sb-label{
+  font-size:9px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.7px;
+  margin-bottom:6px;padding:0 6px;
+}
+.sb-item{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;border-radius:8px;font-size:12px;font-weight:500;
+  color:var(--text2);cursor:pointer;transition:all .15s;margin-bottom:1px;
+}
+.sb-item:hover{background:var(--surface2);color:var(--text)}
+.sb-item.active{background:var(--surface2);color:var(--text)}
+.sb-item.active .sb-indicator{opacity:1}
+.sb-indicator{
+  width:3px;height:14px;background:var(--accent);border-radius:2px;
+  opacity:0;margin-right:6px;flex-shrink:0;transition:opacity .15s;
+}
+.sb-badge{
+  font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;
+  background:var(--accent);color:var(--bg);font-family:'JetBrains Mono',monospace;
+}
+.sb-badge.red{background:var(--danger);color:#fff}
+.sb-badge.warn{background:var(--warn);color:var(--bg)}
+.sb-divider{height:1px;background:var(--border);margin:8px 12px}
+.sb-bottom{padding:12px;margin-top:auto;border-top:1px solid var(--border)}
+.sb-storage-note{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:center;line-height:1.6}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* PAGE HEADER */
+.page-header{
+  padding:18px 24px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.page-title{font-size:20px;font-weight:700;letter-spacing:-.4px}
+.page-sub{font-size:11px;color:var(--text2);margin-top:2px;font-family:'JetBrains Mono',monospace}
+.header-actions{display:flex;gap:8px}
+.btn{
+  padding:7px 14px;font-size:12px;font-weight:600;border-radius:8px;
+  transition:all .15s;display:inline-flex;align-items:center;gap:5px;
+}
+.btn-ghost{
+  background:var(--surface2);color:var(--text2);
+  border:1px solid var(--border);
+}
+.btn-ghost:hover{background:var(--surface3);color:var(--text)}
+.btn-primary{background:var(--accent);color:var(--bg)}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(255,95,87,.25)}
+.btn-danger:hover{background:rgba(255,95,87,.18)}
+
+/* SCROLL AREA */
+.scroll-area{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.scroll-area::-webkit-scrollbar{width:6px}
+.scroll-area::-webkit-scrollbar-track{background:transparent}
+.scroll-area::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* STAT ROW */
+.stat-row{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:12px}
+.stat-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px 20px;
+}
+.stat-card.lime{background:var(--accent);border-color:var(--accent)}
+.stat-label{
+  font-size:10px;font-weight:700;color:var(--text2);
+  text-transform:uppercase;letter-spacing:.5px;
+  display:flex;align-items:center;gap:6px;margin-bottom:10px;
+}
+.stat-card.lime .stat-label{color:rgba(26,26,28,.6)}
+.stat-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.stat-card.lime .stat-dot{background:rgba(26,26,28,.4)}
+.stat-num{
+  font-size:36px;font-weight:800;letter-spacing:-1.5px;
+  font-variant-numeric:tabular-nums;line-height:1;
+  font-family:'DM Sans',sans-serif;
+}
+.stat-card.lime .stat-num{color:var(--bg);font-size:40px}
+.stat-sub{font-size:11px;color:var(--text2);margin-top:8px}
+.stat-card.lime .stat-sub{color:rgba(26,26,28,.55)}
+.stat-highlight{color:var(--accent);font-weight:700}
+.stat-card.lime .stat-highlight{color:var(--bg);font-weight:800}
+
+/* PROGRESS CARD */
+.progress-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px 20px;
+}
+.prog-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.prog-title{font-size:13px;font-weight:600}
+.prog-detail{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.prog-bar-wrap{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;display:flex;margin-bottom:10px}
+.prog-bar-done{background:var(--accent);border-radius:4px;transition:width .6s ease}
+.prog-bar-plan{background:var(--purple);opacity:.7;transition:width .6s ease}
+.prog-legend{display:flex;gap:16px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.prog-gap{margin-left:auto;font-size:11px;font-weight:700;color:var(--danger)}
+.prog-gap.ok{color:var(--accent)}
+
+/* SESSIONS CARD */
+.sessions-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+}
+.sessions-header{
+  padding:14px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.filter-chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{
+  padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;
+  background:transparent;color:var(--text2);
+  border:1px solid var(--border2);transition:all .15s;
+}
+.chip:hover{border-color:var(--text2);color:var(--text)}
+.chip.active{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.add-fab{
+  width:30px;height:30px;border-radius:8px;background:var(--accent);
+  color:var(--bg);font-size:18px;font-weight:700;display:flex;
+  align-items:center;justify-content:center;flex-shrink:0;
+  transition:all .15s;
+}
+.add-fab:hover{filter:brightness(1.1);transform:scale(1.05)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{
+  font-size:9px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.6px;
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  text-align:left;white-space:nowrap;background:var(--surface);
+}
+.tbl td{
+  padding:10px 14px;border-bottom:1px solid var(--border);
+  vertical-align:middle;
+}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr{transition:background .1s;cursor:pointer}
+.tbl tr:hover td{background:var(--surface2)}
+.tbl tr.upcoming{box-shadow:inset 3px 0 0 var(--purple)}
+.tbl tr.overdue{box-shadow:inset 3px 0 0 var(--danger)}
+.tbl tr.missing{box-shadow:inset 3px 0 0 var(--warn)}
+
+.cell-date{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);white-space:nowrap}
+.cell-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.cell-sub{font-size:11px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+
+.type-pill{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
+  font-family:'JetBrains Mono',monospace;white-space:nowrap;
+}
+.type-pill.at{background:var(--accent-bg);color:var(--accent)}
+.type-pill.esp{background:var(--purple-bg);color:var(--purple)}
+
+.status-pill{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
+  font-family:'JetBrains Mono',monospace;white-space:nowrap;
+}
+.status-pill.complete{background:var(--accent-bg);color:var(--accent)}
+.status-pill.partial{background:var(--warn-bg);color:var(--warn)}
+.status-pill.empty{background:var(--surface3);color:var(--muted)}
+.status-pill.overdue{background:var(--danger-bg);color:var(--danger)}
+.status-pill.upcoming{background:var(--purple-bg);color:var(--purple)}
+
+.room-pill{
+  font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;
+  background:var(--surface2);color:var(--text2);
+  font-family:'JetBrains Mono',monospace;white-space:nowrap;
+}
+.room-missing{
+  background:var(--warn-bg);color:var(--warn);cursor:pointer;
+  border:1px solid rgba(255,169,64,.25);
+}
+
+.chk-wrap{display:flex;gap:6px;align-items:center}
+.chk{
+  appearance:none;-webkit-appearance:none;
+  width:15px;height:15px;border-radius:4px;
+  border:1.5px solid var(--border2);background:var(--surface2);
+  cursor:pointer;display:inline-grid;place-content:center;
+  transition:all .12s;flex-shrink:0;
+}
+.chk:hover:not(:disabled){border-color:var(--accent)}
+.chk:checked{background:var(--accent);border-color:var(--accent)}
+.chk:checked::after{
+  content:'';width:4px;height:7px;
+  border:solid var(--bg);border-width:0 2px 2px 0;
+  transform:rotate(45deg) translate(-0.5px,-1px);
+}
+.chk:disabled{opacity:.25;cursor:not-allowed}
+.na-mark{color:var(--muted);font-size:12px}
+
+.row-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
+.tbl tr:hover .row-actions{opacity:1}
+.row-btn{
+  padding:3px 8px;font-size:10px;font-weight:600;border-radius:6px;
+  background:var(--surface3);color:var(--text2);transition:all .12s;
+}
+.row-btn:hover{background:var(--border2);color:var(--text)}
+.row-btn.del:hover{background:var(--danger-bg);color:var(--danger)}
+
+.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:12px;font-style:italic}
+
+/* ── MODAL ──────────────────────────────────────────────────────── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(10,10,12,.75);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;backdrop-filter:blur(3px);padding:20px;
+}
+.modal-overlay.hidden{display:none}
+.modal{
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--radius-lg);width:100%;max-width:460px;
+  max-height:calc(100vh - 40px);overflow-y:auto;
+}
+.modal-header{
+  padding:20px 22px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-size:16px;font-weight:700}
+.modal-close{
+  width:28px;height:28px;border-radius:7px;
+  background:var(--surface2);color:var(--text2);font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .12s;
+}
+.modal-close:hover{background:var(--surface3);color:var(--text)}
+.modal-body{padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+.modal-footer{
+  padding:14px 22px 18px;border-top:1px solid var(--border);
+  display:flex;justify-content:flex-end;gap:8px;
+}
+
+/* FORM FIELDS */
+.field{display:flex;flex-direction:column;gap:5px}
+.field-row{display:grid;gap:12px}
+.field-row.col2{grid-template-columns:1fr 1fr}
+.field-label{
+  font-size:10px;font-weight:700;color:var(--text2);
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.field-label .req{color:var(--danger);margin-left:2px}
+.field-input{
+  padding:9px 12px;font-size:13px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:8px;color:var(--text);
+  transition:border-color .12s;width:100%;
+}
+.field-input:hover{border-color:var(--border2)}
+.field-input:focus{border-color:var(--accent)}
+.field-input:disabled{opacity:.35;cursor:not-allowed}
+select.field-input{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a8a90' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;padding-right:30px;
+}
+option{background:var(--surface);color:var(--text)}
+.type-toggle{display:flex;gap:4px;background:var(--surface2);border-radius:9px;padding:3px}
+.type-opt{
+  flex:1;padding:7px;font-size:12px;font-weight:600;border-radius:7px;
+  color:var(--text2);transition:all .15s;
+}
+.type-opt:hover{color:var(--text)}
+.type-opt.active.at{background:var(--accent-bg);color:var(--accent)}
+.type-opt.active.esp{background:var(--purple-bg);color:var(--purple)}
+.field-hint{font-size:10px;color:var(--muted)}
+.field-callout{
+  padding:9px 12px;border-radius:8px;font-size:11px;
+  font-family:'JetBrains Mono',monospace;
+}
+.field-callout.blue{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(155,159,232,.25)}
+.field-callout.err{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(255,95,87,.25)}
+
+/* QUICK ROOM MODAL */
+.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:18px 22px}
+.room-btn{
+  padding:14px;font-size:13px;font-weight:700;border-radius:9px;
+  background:var(--surface2);color:var(--text2);border:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;transition:all .15s;
+}
+.room-btn:hover{background:var(--surface3);color:var(--text);border-color:var(--border2)}
+.room-btn.active{background:var(--accent-bg);color:var(--accent);border-color:rgba(200,255,87,.35)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;z-index:200;
+  background:var(--surface2);border:1px solid var(--border2);
+  border-radius:10px;padding:12px 18px;font-size:12px;font-weight:500;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transform:translateY(0);transition:all .25s;
+}
+.toast.hidden{transform:translateY(12px);opacity:0;pointer-events:none}
+.toast-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.toast-dot.red{background:var(--danger)}
+
+/* PLACEHOLDER PAGES */
+.placeholder-page{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:12px;color:var(--muted);
+}
+.placeholder-page .ph-icon{
+  width:48px;height:48px;border-radius:12px;background:var(--surface2);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.placeholder-page .ph-title{font-size:16px;font-weight:600;color:var(--text2)}
+.placeholder-page .ph-sub{font-size:12px}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-brand">
+      <div class="logo">H</div>
+      <span class="brand-name">Hub Pessoal</span>
+      <nav class="topbar-nav">
+        <button class="nav-btn active" data-page="estagio">Estágio</button>
+        <button class="nav-btn" data-page="projetos">Projetos</button>
+        <button class="nav-btn" data-page="financas">Finanças</button>
+        <button class="nav-btn" data-page="investimentos">Investimentos</button>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <span class="top-meta">Psicologia Clínica · 2025</span>
+    </div>
+  </div>
+
+  <!-- BODY -->
+  <div class="body">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sb-section">
+        <div class="sb-label">Visão geral</div>
+        <div class="sb-item active" data-sb="sessions">
+          <div style="display:flex;align-items:center;">
+            <div class="sb-indicator"></div>Sessões
+          </div>
+        </div>
+        <div class="sb-item" data-sb="planning">
+          <div style="display:flex;align-items:center;">
+            <div class="sb-indicator"></div>Planejamento
+          </div>
+        </div>
+      </div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-section">
+        <div class="sb-label">Alertas</div>
+        <div class="sb-item" id="sb-room-alert" data-sb="sessions" data-filter="missing">
+          <span>Sala faltando</span>
+          <span class="sb-badge warn" id="sb-room-count">0</span>
+        </div>
+        <div class="sb-item" id="sb-overdue-alert" data-sb="sessions" data-filter="overdue">
+          <span>Atrasadas</span>
+          <span class="sb-badge red" id="sb-overdue-count">0</span>
+        </div>
+        <div class="sb-item" id="sb-gap-alert">
+          <span>Meta de horas</span>
+          <span class="sb-badge" id="sb-gap-val">–</span>
+        </div>
+      </div>
+
+      <div class="sb-divider"></div>
+
+      <div class="sb-section">
+        <div class="sb-label">Exportar</div>
+        <div class="sb-item" id="btn-export-csv">Exportar CSV</div>
+        <div class="sb-item" id="btn-export-json">Exportar JSON</div>
+        <div class="sb-item" id="btn-import">Importar JSON</div>
+        <div class="sb-item" id="btn-reset" style="color:var(--danger)">Resetar dados</div>
+      </div>
+
+      <div class="sb-bottom">
+        <div class="sb-storage-note">dados em localStorage<br>hub_pessoal_v2</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT (pages swapped via JS) -->
+    <main class="main" id="main-content">
+      <!-- rendered by JS -->
+    </main>
+  </div>
+</div>
+
+<!-- ── MODAL: NEW / EDIT SESSION ───────────────────────────────── -->
+<div class="modal-overlay hidden" id="session-modal">
+  <div class="modal" id="session-modal-panel">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Nova sessão</div>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label class="field-label">Paciente <span class="req" id="patient-req">*</span></label>
+        <input class="field-input" id="f-patient" type="text" placeholder="Nome do paciente"/>
+      </div>
+      <div class="field">
+        <label class="field-label" id="sup-label">Colega / Supervisor <span class="req" id="sup-req"></span></label>
+        <input class="field-input" id="f-supervisor" type="text" placeholder="Nome do colega ou psicólogo"/>
+      </div>
+      <div class="field-row col2">
+        <div class="field">
+          <label class="field-label">Data <span class="req">*</span></label>
+          <input class="field-input" id="f-date" type="date"/>
+        </div>
+        <div class="field">
+          <label class="field-label">Horário <span class="req">*</span></label>
+          <input class="field-input" id="f-time" type="time"/>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Tipo</label>
+        <div class="type-toggle">
+          <button class="type-opt at active" data-type="at">Atendimento</button>
+          <button class="type-opt esp" data-type="esp">Espelho</button>
+        </div>
+      </div>
+      <div class="field" id="room-field">
+        <label class="field-label">Sala</label>
+        <select class="field-input" id="f-room">
+          <option value="">— sem sala —</option>
+          <option value="1">Sala 1</option>
+          <option value="2">Sala 2</option>
+          <option value="3">Sala 3</option>
+          <option value="4">Sala 4</option>
+          <option value="5">Sala 5</option>
+          <option value="6">Sala 6</option>
+        </select>
+      </div>
+      <div class="field-callout blue hidden" id="future-callout">
+        Sessão agendada — checklist fica bloqueado até o dia.
+      </div>
+      <div class="field-callout err hidden" id="modal-error"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="modal-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="modal-save">Criar sessão</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: QUICK ROOM ────────────────────────────────────────── -->
+<div class="modal-overlay hidden" id="room-modal">
+  <div class="modal" style="max-width:320px">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Registrar sala</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:2px;font-family:'JetBrains Mono',monospace" id="room-modal-sub"></div>
+      </div>
+      <button class="modal-close" id="room-modal-close">✕</button>
+    </div>
+    <div class="room-grid" id="room-grid"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="room-modal-cancel">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── TOAST ─────────────────────────────────────────────────────── -->
+<div class="toast hidden" id="toast">
+  <div class="toast-dot" id="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- ── FILE INPUT (hidden) ───────────────────────────────────────── -->
+<input type="file" id="file-input" accept=".json" style="display:none"/>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// DATA & STORAGE
+// ═══════════════════════════════════════════════════════════════════
+const KEY = 'hub_pessoal_v2';
+const KEY_V1 = 'hub_pessoal_v1';
+const TARGET = 40;
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { const d = JSON.parse(raw); if (d && Array.isArray(d.sessions)) return d; }
+  } catch {}
+  // Try v1 migration
+  try {
+    const raw = localStorage.getItem(KEY_V1);
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.sessions)) {
+        const sessions = d.sessions.map(s => ({
+          ...s,
+          patient: s.patient ?? (s.type === 'at' ? (s.name || '') : ''),
+          supervisor: s.supervisor ?? (s.type === 'esp' ? (s.name || '') : ''),
+        }));
+        return { sessions, nextId: d.nextId };
+      }
+    }
+  } catch {}
+  return null;
+}
+
+function save(state) {
+  try { localStorage.setItem(KEY, JSON.stringify({ sessions: state.sessions, nextId: state.nextId })); } catch {}
+}
+
+// ── SEED ────────────────────────────────────────────────────────────
+function makeDate(daysAgo) {
+  const d = new Date(); d.setHours(0,0,0,0); d.setDate(d.getDate() - daysAgo);
+  return d.toISOString().slice(0,10);
+}
+function buildSeed() {
+  const HEL='Dra. Helena Costa', PAU='Dr. Paulo Vieira', MAR='Dra. Marina Gil';
+  const full={prontuario:true,pendencias:true,relatorio:true,pesquisa:true};
+  const empty={prontuario:false,pendencias:false,relatorio:false,pesquisa:false};
+  const espF={anotacoes:true,pesquisa:true}, espE={anotacoes:false,pesquisa:false};
+  const s=(id,patient,supervisor,off,time,type,room,checks)=>
+    ({id,patient,supervisor,date:makeDate(off),time,type,dur:1,room,checks});
+  return { nextId:28, sessions:[
+    s(1,'Sofia Marques',HEL,18,'09:00','at','2',full),
+    s(2,'Carlos Ribeiro',HEL,18,'10:00','at','3',full),
+    s(3,'',PAU,17,'14:00','esp','',espF),
+    s(4,'Beatriz Lopes',HEL,15,'09:30','at','1',full),
+    s(5,'',MAR,15,'11:00','esp','',espF),
+    s(6,'Sofia Marques',HEL,11,'09:00','at','2',full),
+    s(7,'Carlos Ribeiro',HEL,11,'10:00','at','3',full),
+    s(8,'Pedro Almeida',HEL,10,'10:00','at','4',full),
+    s(9,'Beatriz Lopes',HEL,8,'09:30','at','1',full),
+    s(10,'',PAU,9,'14:00','esp','',espF),
+    s(11,'',MAR,8,'11:00','esp','',{anotacoes:true,pesquisa:false}),
+    s(12,'Sofia Marques',HEL,5,'09:00','at','2',full),
+    s(13,'Carlos Ribeiro',HEL,5,'10:00','at','3',full),
+    s(14,'Pedro Almeida',HEL,4,'10:00','at','4',{prontuario:true,pendencias:true,relatorio:false,pesquisa:false}),
+    s(15,'Marina Cardoso',HEL,4,'11:00','at','5',empty),
+    s(16,'',PAU,3,'14:00','esp','',espE),
+    s(17,'',MAR,3,'15:00','esp','',espF),
+    s(18,'Sofia Marques',HEL,2,'09:00','at','2',full),
+    s(19,'Carlos Ribeiro',HEL,1,'10:00','at','',{prontuario:true,pendencias:false,relatorio:false,pesquisa:false}),
+    s(20,'Pedro Almeida',HEL,0,'10:00','at','4',empty),
+    s(21,'',PAU,0,'14:00','esp','',espE),
+    // future (negative = future days from today)
+    s(22,'Sofia Marques',HEL,-1,'09:00','at','2',empty),
+    s(23,'Carlos Ribeiro',HEL,-2,'10:00','at','3',empty),
+    s(24,'',PAU,-3,'14:00','esp','',espE),
+    s(25,'Beatriz Lopes',HEL,-7,'09:30','at','1',empty),
+    s(26,'Pedro Almeida',HEL,-8,'10:00','at','4',empty),
+    s(27,'',MAR,-9,'11:00','esp','',espE),
+  ]};
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════
+let state = load() || buildSeed();
+if (!load()) save(state);
+
+let currentPage = 'estagio';
+let currentFilter = 'all';
+let editingId = null;
+let quickRoomId = null;
+
+// ═══════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════
+const MONTHS = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const WDAYS  = ['dom','seg','ter','qua','qui','sex','sáb'];
+const AT_KEYS  = ['prontuario','pendencias','relatorio','pesquisa'];
+const ESP_KEYS = ['anotacoes','pesquisa'];
+const CHECK_LABELS = {prontuario:'Prontuário',pendencias:'Pendências',relatorio:'Relatório',anotacoes:'Anotações',pesquisa:'Pesquisa'};
+
+function today() {
+  const d = new Date(); d.setHours(0,0,0,0); return d;
+}
+function parseDateStr(s) {
+  const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d);
+}
+function todayStr() {
+  return today().toISOString().slice(0,10);
+}
+function daysAgo(s) {
+  return Math.floor((today() - parseDateStr(s.date)) / 86400000);
+}
+function isUpcoming(s) { return daysAgo(s) < 0; }
+function keysFor(s)    { return s.type === 'at' ? AT_KEYS : ESP_KEYS; }
+function completion(s) {
+  const k = keysFor(s); const done = k.filter(x => s.checks[x]).length;
+  return { done, total: k.length };
+}
+function isComplete(s) { const c = completion(s); return c.done === c.total; }
+function isMissing(s)  { return s.type === 'at' && !s.room && !isUpcoming(s); }
+function isOverdue(s)  { return !isUpcoming(s) && !isComplete(s) && daysAgo(s) > 2; }
+function phaseOf(s) {
+  if (isUpcoming(s)) return 'upcoming';
+  if (daysAgo(s) === 0) return 'today';
+  return 'past';
+}
+function fmtDate(s) {
+  const d = parseDateStr(s.date);
+  return WDAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()];
+}
+function statusOf(s) {
+  if (isUpcoming(s)) return {cls:'upcoming',label:'Agendada'};
+  if (isComplete(s)) return {cls:'complete',label:'Completo'};
+  if (isOverdue(s))  return {cls:'overdue', label:'Atrasado'};
+  const c = completion(s);
+  if (c.done === 0)  return {cls:'empty',   label:'Vazio'};
+  return {cls:'partial', label:`Parcial ${c.done}/${c.total}`};
+}
+function emptyChecks(type) {
+  return type === 'at'
+    ? {prontuario:false,pendencias:false,relatorio:false,pesquisa:false}
+    : {anotacoes:false,pesquisa:false};
+}
+function doneHours()    { return state.sessions.filter(s=>!isUpcoming(s)).reduce((a,s)=>a+s.dur,0); }
+function plannedHours() { return state.sessions.filter(isUpcoming).reduce((a,s)=>a+s.dur,0); }
+function completionRate() {
+  const past = state.sessions.filter(s=>!isUpcoming(s));
+  if (!past.length) return 0;
+  return Math.round(past.filter(isComplete).length / past.length * 100);
+}
+function getFiltered() {
+  let list = state.sessions.slice();
+  if      (currentFilter==='at')       list=list.filter(s=>s.type==='at');
+  else if (currentFilter==='esp')      list=list.filter(s=>s.type==='esp');
+  else if (currentFilter==='upcoming') list=list.filter(isUpcoming);
+  else if (currentFilter==='pending')  list=list.filter(s=>!isUpcoming(s)&&!isComplete(s));
+  else if (currentFilter==='overdue')  list=list.filter(isOverdue);
+  else if (currentFilter==='missing')  list=list.filter(isMissing);
+  list.sort((a,b)=>{
+    const au=isUpcoming(a),bu=isUpcoming(b);
+    if(au&&!bu)return -1; if(!au&&bu)return 1;
+    const da=parseDateStr(a.date),db=parseDateStr(b.date);
+    if(au&&bu) return da-db||a.time.localeCompare(b.time);
+    return db-da||a.time.localeCompare(b.time);
+  });
+  return list;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type='ok') {
+  const el=document.getElementById('toast');
+  const dot=document.getElementById('toast-dot');
+  document.getElementById('toast-msg').textContent=msg;
+  dot.className='toast-dot'+(type==='err'?' red':'');
+  el.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.add('hidden'),2800);
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SIDEBAR COUNTERS
+// ═══════════════════════════════════════════════════════════════════
+function updateSidebar() {
+  const rooms   = state.sessions.filter(isMissing).length;
+  const overdue = state.sessions.filter(isOverdue).length;
+  const done    = doneHours(), planned = plannedHours();
+  const gap     = Math.max(0, TARGET - done - planned);
+  document.getElementById('sb-room-count').textContent = rooms;
+  document.getElementById('sb-overdue-count').textContent = overdue;
+  document.getElementById('sb-gap-val').textContent = gap > 0 ? gap.toFixed(1)+'h' : '✓';
+  document.getElementById('sb-room-alert').style.display = rooms ? '' : 'none';
+  document.getElementById('sb-overdue-alert').style.display = overdue ? '' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// RENDER PAGES
+// ═══════════════════════════════════════════════════════════════════
+function render() {
+  updateSidebar();
+  if (currentPage !== 'estagio') { renderPlaceholder(); return; }
+  renderEstagio();
+}
+
+function renderPlaceholder() {
+  const labels={projetos:'Projetos de Vida',financas:'Finanças Pessoais',investimentos:'Investimentos'};
+  const icons ={projetos:'🗂️',financas:'💳',investimentos:'📈'};
+  document.getElementById('main-content').innerHTML=`
+    <div class="placeholder-page">
+      <div class="ph-icon">${icons[currentPage]||'🔧'}</div>
+      <div class="ph-title">${labels[currentPage]||'Módulo'}</div>
+      <div class="ph-sub">Em construção — módulo disponível em breve.</div>
+    </div>`;
+}
+
+function renderEstagio() {
+  const done=doneHours(), planned=plannedHours(), gap=Math.max(0,TARGET-done-planned);
+  const donePct=Math.min(100,(done/TARGET)*100);
+  const planPct=Math.min(100-donePct,(planned/TARGET)*100);
+  const list=getFiltered();
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="page-header">
+      <div>
+        <div class="page-title">Estágio Clínico</div>
+        <div class="page-sub">rastreamento de 40h obrigatórias no semestre</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-primary" id="btn-new">+ Nova sessão</button>
+      </div>
+    </div>
+
+    <div class="scroll-area">
+      <!-- STATS -->
+      <div class="stat-row">
+        <div class="stat-card lime">
+          <div class="stat-label"><div class="stat-dot"></div>Horas cumpridas</div>
+          <div class="stat-num">${done.toFixed(1)}<span style="font-size:18px;color:rgba(26,26,28,.5);font-weight:500;margin-left:4px;">/40</span></div>
+          <div class="stat-sub">de 40h · <span class="stat-highlight">${gap>0?gap.toFixed(1)+'h faltam':'meta atingida!'}</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-dot" style="background:var(--purple)"></div>Agendadas</div>
+          <div class="stat-num" style="font-size:30px;color:var(--purple)">${planned.toFixed(1)}<span style="font-size:15px;color:var(--muted);font-weight:400;margin-left:3px;">h</span></div>
+          <div class="stat-sub">total: <span style="color:var(--purple);font-weight:700">${(done+planned).toFixed(1)}h</span> planejadas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-dot" style="background:var(--accent)"></div>Atendimentos</div>
+          <div class="stat-num" style="font-size:30px">${state.sessions.filter(s=>s.type==='at'&&!isUpcoming(s)).length}<span style="font-size:15px;color:var(--muted);font-weight:400;margin-left:4px;">sessões</span></div>
+          <div class="stat-sub">${state.sessions.filter(s=>s.type==='esp'&&!isUpcoming(s)).length} espelhos realizados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label"><div class="stat-dot" style="background:var(--warn)"></div>Conclusão</div>
+          <div class="stat-num" style="font-size:30px;color:${completionRate()>=70?'var(--accent)':'var(--warn)'}">${completionRate()}<span style="font-size:15px;font-weight:400;margin-left:1px;">%</span></div>
+          <div class="stat-sub">checklists completos</div>
+        </div>
+      </div>
+
+      <!-- PROGRESS BAR -->
+      <div class="progress-card">
+        <div class="prog-header">
+          <div class="prog-title">Progresso rumo às 40h</div>
+          <div class="prog-detail">
+            <span style="color:var(--accent);font-weight:700">${done.toFixed(1)}h</span> cumpridas
+            + <span style="color:var(--purple);font-weight:600">${planned.toFixed(1)}h</span> agendadas
+            = <span style="color:var(--text);font-weight:600">${(done+planned).toFixed(1)}h</span>
+          </div>
+        </div>
+        <div class="prog-bar-wrap">
+          <div class="prog-bar-done" style="width:${donePct}%"></div>
+          <div class="prog-bar-plan" style="width:${planPct}%"></div>
+        </div>
+        <div class="prog-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div>Cumpridas · ${done.toFixed(1)}h</div>
+          <div class="legend-item"><div class="legend-dot" style="background:var(--purple)"></div>Agendadas · ${planned.toFixed(1)}h</div>
+          <div class="prog-gap ${gap===0?'ok':''}">${gap>0?'Faltam '+gap.toFixed(1)+'h para planejar':'Meta atingida!'}</div>
+        </div>
+      </div>
+
+      <!-- SESSIONS TABLE -->
+      <div class="sessions-card">
+        <div class="sessions-header">
+          <div class="filter-chips" id="filter-chips">
+            ${[
+              {k:'all',l:'Todas'},
+              {k:'at',l:'Atendimentos'},
+              {k:'esp',l:'Espelhos'},
+              {k:'upcoming',l:'Agendadas'},
+              {k:'pending',l:'Pendências'},
+              {k:'overdue',l:'Atrasadas'},
+            ].map(f=>`<button class="chip${currentFilter===f.k?' active':''}" data-f="${f.k}">${f.l}</button>`).join('')}
+          </div>
+          <button class="add-fab" id="btn-new2">+</button>
+        </div>
+
+        ${list.length===0
+          ? '<div class="empty-state">Nenhuma sessão corresponde ao filtro.</div>'
+          : `<div style="overflow-x:auto">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Paciente</th>
+                <th>Supervisor</th>
+                <th>Sala</th>
+                <th>Tipo</th>
+                <th style="text-align:center" title="Prontuário">Pr</th>
+                <th style="text-align:center" title="Pendências">Pe</th>
+                <th style="text-align:center" title="Relatório">Re</th>
+                <th style="text-align:center" title="Anotações">An</th>
+                <th style="text-align:center" title="Pesquisa">Pq</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="tbl-body">
+              ${list.map(s=>{
+                const st=statusOf(s);
+                const up=isUpcoming(s),ov=isOverdue(s),ms=isMissing(s);
+                const rowCls=up?'upcoming':ov?'overdue':ms?'missing':'';
+                const chk=(key)=>{
+                  const keys=keysFor(s);
+                  if(!keys.includes(key)) return `<td style="text-align:center"><span class="na-mark">—</span></td>`;
+                  return `<td style="text-align:center"><input type="checkbox" class="chk" data-id="${s.id}" data-k="${key}"
+                    ${s.checks[key]?'checked':''} ${up?'disabled':''} title="${up?'Sessão não realizada ainda':''}"/></td>`;
+                };
+                return `<tr class="${rowCls}" data-id="${s.id}">
+                  <td><div class="cell-date">${fmtDate(s)}</div><div class="cell-date" style="color:var(--muted)">${s.time}</div></td>
+                  <td><div class="cell-name">${s.patient||'<span style="color:var(--muted);font-style:italic;font-weight:400">—</span>'}</div>
+                  ${up?`<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--purple-bg);color:var(--purple);font-family:\'JetBrains Mono\',monospace">AGENDADA</span>`:''}
+                  ${ms?`<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--warn-bg);color:var(--warn);font-family:\'JetBrains Mono\',monospace">! SALA</span>`:''}
+                  ${ov?`<span style="font-size:9px;font-weight:700;padding:2px 6px;border-radius:10px;background:var(--danger-bg);color:var(--danger);font-family:\'JetBrains Mono\',monospace">! ATR.</span>`:''}
+                  </td>
+                  <td><div class="cell-sub">${s.supervisor||'<span style="font-style:italic">—</span>'}</div></td>
+                  <td>${s.type==='esp'?'<span class="na-mark">—</span>':
+                    s.room?`<span class="room-pill">Sala ${s.room}</span>`:
+                    up?`<span style="color:var(--muted);font-style:italic;font-size:11px">a definir</span>`:
+                    `<button class="room-pill room-missing" data-id="${s.id}">Sala?</button>`
+                  }</td>
+                  <td><span class="type-pill ${s.type}">${s.type==='at'?'Atend.':'Espelho'}</span></td>
+                  ${chk('prontuario')}${chk('pendencias')}${chk('relatorio')}${chk('anotacoes')}${chk('pesquisa')}
+                  <td><span class="status-pill ${st.cls}">${st.label}</span></td>
+                  <td>
+                    <div class="row-actions">
+                      <button class="row-btn" data-action="edit" data-id="${s.id}">Editar</button>
+                      <button class="row-btn del" data-action="delete" data-id="${s.id}">Excluir</button>
+                    </div>
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table></div>`
+        }
+      </div>
+    </div>`;
+
+  // Bind table events
+  document.getElementById('filter-chips')?.addEventListener('click', e=>{
+    const btn=e.target.closest('.chip');
+    if(!btn) return;
+    currentFilter=btn.dataset.f;
+    render();
+  });
+  document.getElementById('btn-new')?.addEventListener('click', ()=>openModal(null));
+  document.getElementById('btn-new2')?.addEventListener('click', ()=>openModal(null));
+
+  document.getElementById('tbl-body')?.addEventListener('change', e=>{
+    if(!e.target.matches('.chk')) return;
+    const id=+e.target.dataset.id, key=e.target.dataset.k;
+    const s=state.sessions.find(x=>x.id===id);
+    if(!s||isUpcoming(s)) { e.target.checked=!e.target.checked; return; }
+    s.checks[key]=e.target.checked;
+    save(state); updateSidebar();
+    showToast(e.target.checked ? '✓ Tarefa marcada' : 'Tarefa desmarcada');
+  });
+
+  document.getElementById('tbl-body')?.addEventListener('click', e=>{
+    const editBtn=e.target.closest('[data-action="edit"]');
+    const delBtn=e.target.closest('[data-action="delete"]');
+    const roomBtn=e.target.closest('.room-missing');
+    const row=e.target.closest('tr[data-id]');
+    if(editBtn){ openModal(+editBtn.dataset.id); return; }
+    if(delBtn){
+      const s=state.sessions.find(x=>x.id===+delBtn.dataset.id);
+      const label=s?.patient||s?.supervisor||'esta sessão';
+      if(confirm(`Excluir ${label}?`)){
+        state.sessions=state.sessions.filter(x=>x.id!==+delBtn.dataset.id);
+        save(state); render(); showToast('Sessão excluída','err');
+      }
+      return;
+    }
+    if(roomBtn){ openRoomModal(+roomBtn.dataset.id); return; }
+    if(row&&!e.target.closest('button')&&!e.target.closest('input')){
+      openModal(+row.dataset.id);
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SESSION MODAL
+// ═══════════════════════════════════════════════════════════════════
+let modalType='at';
+
+function openModal(id) {
+  editingId=id;
+  const s=id!=null?state.sessions.find(x=>x.id===id):null;
+  document.getElementById('session-modal').classList.remove('hidden');
+  document.getElementById('modal-title').textContent=s?'Editar sessão':'Nova sessão';
+  document.getElementById('modal-save').textContent=s?'Salvar':'Criar sessão';
+  document.getElementById('modal-error').classList.add('hidden');
+  document.getElementById('future-callout').classList.add('hidden');
+
+  modalType=s?.type||'at';
+  document.getElementById('f-patient').value=s?.patient||'';
+  document.getElementById('f-supervisor').value=s?.supervisor||'';
+  document.getElementById('f-date').value=s?.date||todayStr();
+  document.getElementById('f-time').value=s?.time||'09:00';
+  document.getElementById('f-room').value=s?.room||'';
+
+  updateModalType(modalType);
+  updateFutureCallout();
+}
+
+function updateModalType(type) {
+  modalType=type;
+  document.querySelectorAll('.type-opt').forEach(b=>{
+    b.classList.toggle('active', b.dataset.type===type);
+  });
+  document.getElementById('patient-req').textContent=type==='at'?'*':'';
+  document.getElementById('sup-req').textContent=type==='esp'?'*':'';
+  document.getElementById('room-field').style.display=type==='esp'?'none':'';
+}
+
+function updateFutureCallout() {
+  const date=document.getElementById('f-date').value;
+  const isFut=date>todayStr();
+  document.getElementById('future-callout').classList.toggle('hidden',!isFut);
+}
+
+function closeModal() {
+  document.getElementById('session-modal').classList.add('hidden');
+  editingId=null;
+}
+
+function saveModal() {
+  const patient=document.getElementById('f-patient').value.trim();
+  const supervisor=document.getElementById('f-supervisor').value.trim();
+  const date=document.getElementById('f-date').value;
+  const time=document.getElementById('f-time').value;
+  const room=modalType==='esp'?'':document.getElementById('f-room').value;
+
+  const errEl=document.getElementById('modal-error');
+  function showErr(msg){errEl.textContent=msg;errEl.classList.remove('hidden');return false;}
+
+  if(modalType==='at'&&!patient) return showErr('Atendimento requer o nome do paciente.');
+  if(modalType==='esp'&&!supervisor) return showErr('Espelho requer o nome do colega/supervisor.');
+  if(!date) return showErr('Informe a data.');
+  if(!time) return showErr('Informe o horário.');
+
+  if(editingId!=null) {
+    const s=state.sessions.find(x=>x.id===editingId);
+    if(!s) return;
+    if(s.type!==modalType) s.checks=emptyChecks(modalType);
+    s.patient=patient; s.supervisor=supervisor;
+    s.date=date; s.time=time; s.type=modalType; s.room=room;
+    showToast('Sessão atualizada');
+  } else {
+    state.sessions.push({
+      id:state.nextId++,
+      patient,supervisor,date,time,type:modalType,dur:1,room,
+      checks:emptyChecks(modalType),
+    });
+    showToast('Sessão criada');
+  }
+  save(state); closeModal(); render();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ROOM MODAL
+// ═══════════════════════════════════════════════════════════════════
+function openRoomModal(id) {
+  quickRoomId=id;
+  const s=state.sessions.find(x=>x.id===id);
+  if(!s) return;
+  document.getElementById('room-modal').classList.remove('hidden');
+  document.getElementById('room-modal-sub').textContent=
+    (s.patient||s.supervisor||'—')+' · '+fmtDate(s)+' '+s.time;
+  const grid=document.getElementById('room-grid');
+  grid.innerHTML=['1','2','3','4','5','6'].map(r=>
+    `<button class="room-btn${s.room===r?' active':''}" data-room="${r}">Sala ${r}</button>`
+  ).join('');
+}
+
+function closeRoomModal() {
+  document.getElementById('room-modal').classList.add('hidden');
+  quickRoomId=null;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════════════════
+function exportCSV() {
+  const rows=[['id','data','horario','paciente','supervisor','tipo','sala','duracao',
+    'prontuario','pendencias','relatorio','anotacoes','pesquisa'].join(',')];
+  state.sessions.forEach(s=>{
+    const esc=v=>`"${String(v).replace(/"/g,'""')}"`;
+    const b=v=>v===undefined?'':v?'1':'0';
+    rows.push([s.id,esc(s.date),esc(s.time),esc(s.patient),esc(s.supervisor),
+      s.type,esc(s.room),s.dur,
+      b(s.checks.prontuario),b(s.checks.pendencias),b(s.checks.relatorio),
+      b(s.checks.anotacoes),b(s.checks.pesquisa)].join(','));
+  });
+  download('sessoes.csv', rows.join('\n'), 'text/csv;charset=utf-8');
+}
+
+function exportJSON() {
+  download('backup.json', JSON.stringify({sessions:state.sessions,nextId:state.nextId},null,2), 'application/json');
+}
+
+function download(name, content, mime) {
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type:mime}));
+  a.download=name; a.click(); URL.revokeObjectURL(a.href);
+}
+
+function importJSON(raw) {
+  try {
+    const d=JSON.parse(raw);
+    if(!d||!Array.isArray(d.sessions)) throw new Error();
+    state.sessions=d.sessions;
+    state.nextId=typeof d.nextId==='number'?d.nextId:d.sessions.length+1;
+    save(state); render(); showToast('Importado com sucesso');
+  } catch { showToast('Arquivo inválido','err'); }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// EVENT BINDINGS (global)
+// ═══════════════════════════════════════════════════════════════════
+// Nav tabs
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentPage=btn.dataset.page;
+    render();
+  });
+});
+
+// Sidebar items
+document.querySelector('.sidebar').addEventListener('click', e=>{
+  const item=e.target.closest('.sb-item[data-sb]');
+  if(!item) return;
+  const filter=item.dataset.filter;
+  currentPage='estagio';
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.nav-btn[data-page="estagio"]').classList.add('active');
+  if(filter){ currentFilter=filter; }
+  render();
+});
+
+// Sidebar export buttons
+document.getElementById('btn-export-csv').addEventListener('click',exportCSV);
+document.getElementById('btn-export-json').addEventListener('click',exportJSON);
+document.getElementById('btn-reset').addEventListener('click',()=>{
+  if(confirm('Resetar todos os dados para o seed inicial?')){
+    state=buildSeed(); save(state); render(); showToast('Dados resetados','err');
+  }
+});
+document.getElementById('btn-import').addEventListener('click',()=>{
+  document.getElementById('file-input').click();
+});
+document.getElementById('file-input').addEventListener('change',e=>{
+  const f=e.target.files?.[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>importJSON(r.result);
+  r.readAsText(f);
+  e.target.value='';
+});
+
+// Session modal
+document.getElementById('modal-close').addEventListener('click',closeModal);
+document.getElementById('modal-cancel').addEventListener('click',closeModal);
+document.getElementById('modal-save').addEventListener('click',saveModal);
+document.getElementById('session-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('session-modal')) closeModal();
+});
+document.querySelectorAll('.type-opt').forEach(btn=>{
+  btn.addEventListener('click',()=>updateModalType(btn.dataset.type));
+});
+document.getElementById('f-date').addEventListener('input',updateFutureCallout);
+
+// Room modal
+document.getElementById('room-modal-close').addEventListener('click',closeRoomModal);
+document.getElementById('room-modal-cancel').addEventListener('click',closeRoomModal);
+document.getElementById('room-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('room-modal')) closeRoomModal();
+});
+document.getElementById('room-grid').addEventListener('click',e=>{
+  const btn=e.target.closest('.room-btn');
+  if(!btn||quickRoomId==null) return;
+  const s=state.sessions.find(x=>x.id===quickRoomId);
+  if(s){ s.room=btn.dataset.room; save(state); render(); showToast('Sala '+btn.dataset.room+' registrada'); }
+  closeRoomModal();
+});
+
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closeRoomModal();}
+});
+
+// ── INITIAL RENDER ───────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
